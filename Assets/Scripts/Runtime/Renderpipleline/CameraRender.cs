@@ -11,6 +11,9 @@ public class CameraRender
     private Camera _camera;
 
     private CullingResults _cullingResults;
+
+    private static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
+    
     
     
     public void Render(ref ScriptableRenderContext context, Camera camera)
@@ -49,6 +52,12 @@ public class CameraRender
 
     void DrawVisibleGeometry()
     {
+        var sortingSettings = new SortingSettings(_camera);
+        var drawingSetting = new DrawingSettings(unlitShaderTagId, sortingSettings);
+        var filteringSetting = new FilteringSettings(RenderQueueRange.all);
+        
+        context.DrawRenderers(_cullingResults, ref drawingSetting, ref filteringSetting);
+        
         context.DrawSkybox(_camera);
     }
 
