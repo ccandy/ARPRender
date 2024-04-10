@@ -10,10 +10,18 @@ public class CameraRender
     private ScriptableRenderContext context;
     private Camera _camera;
 
+    private CullingResults _cullingResults;
+    
+    
     public void Render(ref ScriptableRenderContext context, Camera camera)
     {
         this.context = context;
         this._camera = camera;
+
+        if (!Cull())
+        {
+            return;
+        }
         
         Setup();
         ExecuteAndClearBuffer();
@@ -25,7 +33,7 @@ public class CameraRender
     {
         //setup camera matrix
         context.SetupCameraProperties(_camera);
-        
+
         //setup command buffer
         if (_cameraBuffer == null)
         {
@@ -34,16 +42,29 @@ public class CameraRender
                 name = bufferName
             };
         }
+
         _cameraBuffer.ClearRenderTarget(true, true, Color.clear);
         _cameraBuffer.BeginSample(bufferName);
     }
-    
+
     void DrawVisibleGeometry()
     {
         context.DrawSkybox(_camera);
     }
 
-    void Submit()
+    bool Cull()
+    {
+        if (_camera.TryGetCullingParameters(out ScriptableCullingParameters parameters))
+        {
+            _cullingResults = context.Cull(ref parameters);
+            return true;
+        }
+
+        return false;
+    }
+
+
+void Submit()
     {
         _cameraBuffer.EndSample(bufferName);
         context.Submit();
