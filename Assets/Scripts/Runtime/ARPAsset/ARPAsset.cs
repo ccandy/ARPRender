@@ -8,6 +8,6 @@ public class ARPAsset : RenderPipelineAsset
 {
     protected override RenderPipeline CreatePipeline()
     {
-        return null;
+        return new ARPipeline();
     }
 }
