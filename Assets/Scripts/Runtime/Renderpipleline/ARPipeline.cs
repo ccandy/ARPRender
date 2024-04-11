@@ -16,7 +16,4 @@ public class ARPipeline : RenderPipeline
             }
         }
     }
-    
-    
-    
 }
