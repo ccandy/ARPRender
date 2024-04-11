@@ -89,7 +89,6 @@ public class CameraRender
             _errorMat = new Material(Shader.Find("Hidden/Core/FallbackError"));
         }
         
-        
         var drawSettings = new DrawingSettings
         (
             legacyShaderTagIds[0], new SortingSettings(_camera)
@@ -97,14 +96,16 @@ public class CameraRender
         {
             overrideMaterial = _errorMat
         };
+        
+        for (int n = 1; n < legacyShaderTagIds.Length; n++)
+        {
+            drawSettings.SetShaderPassName(n, legacyShaderTagIds[n]);        
+        }
 
         var filterSettings = FilteringSettings.defaultValue;
         context.DrawRenderers(_cullingResults, ref drawSettings, ref filterSettings);
 
-        for (int n = 0; n < legacyShaderTagIds.Length; n++)
-        {
-            drawSettings.SetShaderPassName(n, legacyShaderTagIds[n]);        
-        }
+        
     }
     
     bool Cull()
