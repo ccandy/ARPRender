@@ -11,9 +11,6 @@ public partial class CameraRender
     private Camera _camera;
 
     private CullingResults _cullingResults;
-
-    
-    
     
     public void Render(ref ScriptableRenderContext context, Camera camera)
     {
@@ -38,7 +35,11 @@ public partial class CameraRender
     {
         //setup camera matrix
         context.SetupCameraProperties(_camera);
-        _cameraBuffer.ClearRenderTarget(true, true, Color.clear);
+        CameraClearFlags flags = _camera.clearFlags;
+        _cameraBuffer.ClearRenderTarget(flags <= CameraClearFlags.Depth, 
+            flags == CameraClearFlags.Color,
+            flags == CameraClearFlags.Color ?
+            _camera.backgroundColor.linear : Color.clear);
         _cameraBuffer.BeginSample(bufferName);
         ExecuteAndClearBuffer();
     }
