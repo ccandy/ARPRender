@@ -19,6 +19,7 @@ public partial class CameraRender
     {
         this.context = context;
         this._camera = camera;
+        PrepareBuffer();
         PrepareForSceneWindow();
         if (!Cull())
         {
@@ -37,18 +38,9 @@ public partial class CameraRender
     {
         //setup camera matrix
         context.SetupCameraProperties(_camera);
-
-        //setup command buffer
-        if (_cameraBuffer == null)
-        {
-            _cameraBuffer = new CommandBuffer
-            {
-                name = bufferName
-            };
-        }
-
         _cameraBuffer.ClearRenderTarget(true, true, Color.clear);
         _cameraBuffer.BeginSample(bufferName);
+        ExecuteAndClearBuffer();
     }
 
     void DrawVisibleGeometry()
@@ -83,11 +75,11 @@ public partial class CameraRender
 
         return false;
     }
-
-
+    
     void Submit()
     {
         _cameraBuffer.EndSample(bufferName);
+        ExecuteAndClearBuffer();
         context.Submit();
     }
 
