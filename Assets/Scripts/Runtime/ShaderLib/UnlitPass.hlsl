@@ -2,7 +2,10 @@
 #define ARP_UNLIT_PASS_INCLUDE
 
 #include "Common.hlsl"
-float4 _Color;
+
+CBUFFER_START(UnityPerMaterial)
+    float4 _Color;
+CBUFFER_END
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex); 

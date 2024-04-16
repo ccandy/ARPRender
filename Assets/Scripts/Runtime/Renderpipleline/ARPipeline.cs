@@ -6,7 +6,14 @@ using UnityEngine.Rendering;
 public class ARPipeline : RenderPipeline
 {
     private CameraRender _cameraRender = new CameraRender();
-    protected override void Render(ScriptableRenderContext context, Camera[] cameras)
+
+    public ARPipeline(bool enableShaderBatch)
+    {
+        GraphicsSettings.useScriptableRenderPipelineBatching = enableShaderBatch;
+    }
+
+
+protected override void Render(ScriptableRenderContext context, Camera[] cameras)
     {
         foreach (var cam in cameras)
         {
