@@ -6,10 +6,31 @@ using UnityEngine.Rendering;
 public class ARPipeline : RenderPipeline
 {
     private CameraRender _cameraRender = new CameraRender();
-
-    public ARPipeline(bool enableShaderBatch)
+    private ARPAsset _asset;
+    
+    
+    public ARPipeline(ARPAsset asset)
     {
-        GraphicsSettings.useScriptableRenderPipelineBatching = enableShaderBatch;
+        _asset = asset;
+        if (_asset.EnableShaderBatch)
+        {
+            
+            GraphicsSettings.useScriptableRenderPipelineBatching = true;
+            Shader.EnableKeyword("ARP_SHADERBATCH_ON");
+            _asset.EnableGPUInstance = false;
+            Shader.DisableKeyword("ARP_GPUINSTANCE_ON");
+        }
+
+        if (_asset.EnableGPUInstance)
+        {
+            GraphicsSettings.useScriptableRenderPipelineBatching = false;
+            Shader.DisableKeyword("ARP_SHADERBATCH_ON");
+            _asset.EnableShaderBatch = false;
+            Shader.EnableKeyword("ARP_GPUINSTANCE_ON");
+        }
+        
+        
+        
     }
 
 
