@@ -28,11 +28,14 @@ struct VertexOutput
     UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
         UNITY_DEFINE_INSTANCED_PROP(float4, _Color)
         UNITY_DEFINE_INSTANCED_PROP(float4, _MainTex_ST)
+        UNITY_DEFINE_INSTANCED_PROP(float, _CutOff)
     UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 #else
     CBUFFER_START(UnityPerMaterial)
         float4 _Color;
+        float _CutOff;
     CBUFFER_END
+    float4 _MainTex_ST;
 #endif
 
 VertexOutput UnlitPassVertex(VertexInput input)
@@ -55,11 +58,16 @@ half4 UnlitPassFrag(VertexOutput input) : SV_TARGET
     #if defined(ARP_GPUINSTANCE_ON)
         UNITY_SETUP_INSTANCE_ID(input);
         const half4 baseColor = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Color);
+        const half cutOff = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _CutOff);
     #else
         half4 baseColor = _Color;
+        half cutOff = _CutOff;
     #endif
     const half4 mainTex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
     half4 col = mainTex * baseColor;
+    #if defined(ARP_CLIPING)
+        clip(col.a - cutOff);
+    #endif
     return col ;
 }
 
