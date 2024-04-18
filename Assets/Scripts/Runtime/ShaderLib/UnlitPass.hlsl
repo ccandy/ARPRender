@@ -30,9 +30,9 @@ struct VertexOutput
         UNITY_DEFINE_INSTANCED_PROP(float4, _MainTex_ST)
     UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
 #else
-CBUFFER_START(UnityPerMaterial)
+    CBUFFER_START(UnityPerMaterial)
         float4 _Color;
-    CBUFFER_END*/
+    CBUFFER_END
 #endif
 
 VertexOutput UnlitPassVertex(VertexInput input)

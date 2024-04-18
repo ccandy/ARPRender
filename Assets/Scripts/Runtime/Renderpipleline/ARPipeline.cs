@@ -19,18 +19,19 @@ public class ARPipeline : RenderPipeline
             Shader.EnableKeyword("ARP_SHADERBATCH_ON");
             _asset.EnableGPUInstance = false;
             Shader.DisableKeyword("ARP_GPUINSTANCE_ON");
-        }
-
-        if (_asset.EnableGPUInstance)
+        }else if (_asset.EnableGPUInstance)
         {
             GraphicsSettings.useScriptableRenderPipelineBatching = false;
             Shader.DisableKeyword("ARP_SHADERBATCH_ON");
             _asset.EnableShaderBatch = false;
             Shader.EnableKeyword("ARP_GPUINSTANCE_ON");
         }
-        
-        
-        
+        else
+        {
+            GraphicsSettings.useScriptableRenderPipelineBatching = false;
+            Shader.DisableKeyword("ARP_GPUINSTANCE_ON");
+            Shader.DisableKeyword("ARP_SHADERBATCH_ON");
+        }
     }
 
 
@@ -40,7 +41,7 @@ protected override void Render(ScriptableRenderContext context, Camera[] cameras
         {
             if (_cameraRender != null)
             {
-                _cameraRender.Render(ref context, cam);
+                _cameraRender.Render(ref context, cam, _asset.EnableGPUInstance, _asset.EnableDynamicBathc);
             }
         }
     }

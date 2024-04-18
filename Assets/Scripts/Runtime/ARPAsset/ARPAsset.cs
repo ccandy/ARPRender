@@ -8,6 +8,7 @@ public class ARPAsset : RenderPipelineAsset
 {
     public bool EnableShaderBatch = true;
     public bool EnableGPUInstance = false;
+    public bool EnableDynamicBathc = false;
     protected override RenderPipeline CreatePipeline()
     {
         return new ARPipeline(this);
