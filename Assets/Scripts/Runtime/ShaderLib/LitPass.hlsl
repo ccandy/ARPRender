@@ -2,6 +2,7 @@
 #define ARP_LIT_PASS_INCLUDE
 
 #include "Common.hlsl"
+#include "Surface.hlsl"
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex); 
@@ -51,13 +52,14 @@ VertexOutput LitPassVertex(VertexInput input)
     #endif
     output.positionCS = TransformObjectToHClip(input.positionOS);
     output.uv = input.uv * mainTexST.xy + mainTexST.zw;
-    output.normalWS =  normalize(TransformObjectToWorldNormal(input.normal));
+    output.normalWS =  TransformObjectToWorldNormal(input.normal);
     
     return output;
 }
 
 half4 LitPassFrag(VertexOutput input) : SV_TARGET
 {
+    
     #if defined(ARP_GPUINSTANCE_ON)
         UNITY_SETUP_INSTANCE_ID(input);
         const half4 baseColor = UNITY_ACCESS_INSTANCED_PROP(UnityPerMaterial, _Color);
@@ -71,7 +73,13 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     #if defined(ARP_CLIPING)
         clip(col.a - cutOff);
     #endif
-    return col ;
+
+    Surface surface;
+    surface.normal = normalize(input.normalWS);
+    surface.color = col.rgb;
+    surface.alpha = col.a;
+    
+    return float4(surface.color, surface.alpha);
 }
 
 #endif
