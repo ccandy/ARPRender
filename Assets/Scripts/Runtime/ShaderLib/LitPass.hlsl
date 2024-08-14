@@ -43,6 +43,9 @@ struct VertexOutput
     float4 _MainTex_ST;
 #endif
 
+float _Roughness;
+float _Metallic;
+
 VertexOutput LitPassVertex(VertexInput input)
 {
     VertexOutput output;
