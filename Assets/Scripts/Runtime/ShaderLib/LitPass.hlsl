@@ -2,10 +2,7 @@
 #define ARP_LIT_PASS_INCLUDE
 
 #include "Common.hlsl"
-#include "Surface.hlsl"
-#include "BRDF.hlsl"
-#include "Light.hlsl"
-#include "Lighting.hlsl"
+
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex); 
@@ -80,13 +77,8 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
         clip(col.a - cutOff);
     #endif
 
-    Surface surface;
-    surface.normal = normalize(input.normalWS);
-    surface.color = col.rgb;
-    surface.alpha = col.a;
-    surface.roughness = _Roughness;
-    surface.metallic = _Metallic;
-
+    Surface surface = GetSurface(col, input.normalWS, _Roughness, _Metallic);
+    
     BRDF brdf = GetBRDF(surface);
     
     float3 lightColor = GetLighting(surface);
