@@ -2,9 +2,6 @@
 #define ARP_LIT_PASS_INCLUDE
 
 #include "Common.hlsl"
-#include "Surface.hlsl"
-#include "Light.hlsl"
-#include "Lighting.hlsl"
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex); 
@@ -21,7 +18,8 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float4 positionCS:SV_POSITION;
+    float3 positionCS:SV_POSITION;
+    float3 positionWS:VAR_POSITION;
     float2 uv:VAR_BASE_UV;
     float3 normalWS:VAR_NORMAL;
     #if defined(ARP_GPUINSTANCE_ON)
@@ -43,6 +41,9 @@ struct VertexOutput
     float4 _MainTex_ST;
 #endif
 
+float _Roughness;
+float _Metallic;
+
 VertexOutput LitPassVertex(VertexInput input)
 {
     VertexOutput output;
@@ -52,7 +53,8 @@ VertexOutput LitPassVertex(VertexInput input)
     #else
         float4 mainTexST = _MainTex_ST;
     #endif
-    output.positionCS = TransformObjectToHClip(input.positionOS);
+    output.positionWS = TransformObjectToWorld(input.positionOS);
+    output.positionCS = TransformWorldToHClipDir(output.positionWS);
     output.uv = input.uv * mainTexST.xy + mainTexST.zw;
     output.normalWS =  TransformObjectToWorldNormal(input.normal);
     
@@ -76,15 +78,13 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
         clip(col.a - cutOff);
     #endif
 
-    Surface surface;
-    surface.normal = normalize(input.normalWS);
-    surface.color = col.rgb;
-    surface.alpha = col.a;
+    Surface surface = GetSurface(col, input.normalWS, input.positionWS, _Roughness, _Metallic);
+    
+    BRDF brdf = GetBRDF(surface);
     
     float3 lightColor = GetLighting(surface);
 
-    float3 finalCol = lightColor * surface.color;
-
+    float3 finalCol = lightColor * brdf.diffuse;
     
     return float4(finalCol, surface.alpha);
 }

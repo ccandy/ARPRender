@@ -1,5 +1,5 @@
-#ifndef ARP_COMMON
-#define ARP_COMMON
+#ifndef ARP_COMMON_INCLUDE
+#define ARP_COMMON_INCLUDE
 
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
@@ -16,5 +16,12 @@
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInstancing.hlsl"
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
+
+
+#include "Math.hlsl"
+#include "Surface.hlsl"
+#include "BRDF.hlsl"
+#include "Light.hlsl"
+#include "Lighting.hlsl"
 
 #endif
