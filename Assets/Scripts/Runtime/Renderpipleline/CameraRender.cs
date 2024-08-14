@@ -11,6 +11,8 @@ public partial class CameraRender
     private Camera _camera;
 
     private CullingResults _cullingResults;
+
+    private Lighting _lighting = new Lighting();
     
     public void Render(ref ScriptableRenderContext context, Camera camera, bool useGPUInstance, bool useDynamicBatch)
     {
@@ -24,6 +26,7 @@ public partial class CameraRender
         }
         
         Setup();
+        _lighting.Setup(context);
         ExecuteAndClearBuffer();
         DrawVisibleGeometry(useGPUInstance, useDynamicBatch);
         DrawUnsupportedShaders();
