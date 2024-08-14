@@ -1,5 +1,5 @@
-#ifndef ARP_COMMON
-#define ARP_COMMON
+#ifndef ARP_COMMON_INCLUDE
+#define ARP_COMMON_INCLUDE
 
 
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
