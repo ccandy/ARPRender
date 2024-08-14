@@ -9,10 +9,13 @@ partial class CameraRender
     partial void DrawGizmos();
     partial void DrawUnsupportedShaders();
     partial void PrepareForSceneWindow();
+    partial void PrepareBuffer();
 
 #if UNITY_EDITOR
-    private static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
-
+    private static ShaderTagId
+        unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
+        litShaderTagId = new ShaderTagId("CustomLit");
+    
     private static ShaderTagId[] legacyShaderTagIds =
     {
         new ShaderTagId("Always"),
@@ -65,6 +68,19 @@ partial class CameraRender
         {
             ScriptableRenderContext.EmitGeometryForCamera(_camera);
         }
+    }
+
+    partial void PrepareBuffer()
+    {
+        //setup command buffer
+        if (_cameraBuffer == null)
+        {
+            _cameraBuffer = new CommandBuffer
+            {
+                name = bufferName
+            };
+        }
+        _cameraBuffer.name = _camera.name;
     }
 
 

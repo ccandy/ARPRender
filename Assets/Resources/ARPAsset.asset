@@ -12,3 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9803b62be9c14cb4b951bffcc4d7a366, type: 3}
   m_Name: ARPAsset
   m_EditorClassIdentifier: 
+  EnableShaderBatch: 1
+  EnableGPUInstance: 0
+  EnableDynamicBathc: 0
