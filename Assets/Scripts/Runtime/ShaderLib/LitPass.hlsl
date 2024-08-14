@@ -3,7 +3,6 @@
 
 #include "Common.hlsl"
 
-
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex); 
 
@@ -19,7 +18,8 @@ struct VertexInput
 
 struct VertexOutput
 {
-    float4 positionCS:SV_POSITION;
+    float3 positionCS:SV_POSITION;
+    float3 positionWS:VAR_POSITION;
     float2 uv:VAR_BASE_UV;
     float3 normalWS:VAR_NORMAL;
     #if defined(ARP_GPUINSTANCE_ON)
@@ -53,7 +53,8 @@ VertexOutput LitPassVertex(VertexInput input)
     #else
         float4 mainTexST = _MainTex_ST;
     #endif
-    output.positionCS = TransformObjectToHClip(input.positionOS);
+    output.positionWS = TransformObjectToWorld(input.positionOS);
+    output.positionCS = TransformWorldToHClipDir(output.positionWS);
     output.uv = input.uv * mainTexST.xy + mainTexST.zw;
     output.normalWS =  TransformObjectToWorldNormal(input.normal);
     
@@ -77,7 +78,7 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
         clip(col.a - cutOff);
     #endif
 
-    Surface surface = GetSurface(col, input.normalWS, _Roughness, _Metallic);
+    Surface surface = GetSurface(col, input.normalWS, input.positionWS, _Roughness, _Metallic);
     
     BRDF brdf = GetBRDF(surface);
     

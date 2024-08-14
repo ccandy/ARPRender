@@ -11,7 +11,7 @@ struct Surface
     float alpha;
 };
 
-Surface GetSurface(float4 col, float3 normal, float roughness, float metallic)
+Surface GetSurface(float4 col, float3 normal, float3 posWS, float roughness, float metallic)
 {
     Surface surface;
 
@@ -20,7 +20,7 @@ Surface GetSurface(float4 col, float3 normal, float roughness, float metallic)
     surface.normal = normal;
     surface.roughness = roughness;
     surface.metallic = metallic;
-
+    surface.viewDir = normalize(_WorldSpaceCameraPos - posWS);
     return surface;
 }
 
