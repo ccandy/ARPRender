@@ -84,6 +84,8 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     surface.normal = normalize(input.normalWS);
     surface.color = col.rgb;
     surface.alpha = col.a;
+    surface.roughness = _Roughness;
+    surface.metallic = _Metallic;
 
     BRDF brdf = GetBRDF(surface);
     
