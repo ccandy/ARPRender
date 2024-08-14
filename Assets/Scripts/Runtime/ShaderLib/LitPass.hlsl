@@ -3,6 +3,7 @@
 
 #include "Common.hlsl"
 #include "Surface.hlsl"
+#include "BRDF.hlsl"
 #include "Light.hlsl"
 #include "Lighting.hlsl"
 
@@ -83,11 +84,12 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     surface.normal = normalize(input.normalWS);
     surface.color = col.rgb;
     surface.alpha = col.a;
+
+    BRDF brdf = GetBRDF(surface);
     
     float3 lightColor = GetLighting(surface);
 
-    float3 finalCol = lightColor * surface.color;
-
+    float3 finalCol = lightColor * brdf.diffuse;
     
     return float4(finalCol, surface.alpha);
 }
