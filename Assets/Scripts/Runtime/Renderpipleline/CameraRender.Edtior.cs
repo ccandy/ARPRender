@@ -12,8 +12,10 @@ partial class CameraRender
     partial void PrepareBuffer();
 
 #if UNITY_EDITOR
-    private static ShaderTagId unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit");
-
+    private static ShaderTagId
+        unlitShaderTagId = new ShaderTagId("SRPDefaultUnlit"),
+        litShaderTagId = new ShaderTagId("CustomLit");
+    
     private static ShaderTagId[] legacyShaderTagIds =
     {
         new ShaderTagId("Always"),
