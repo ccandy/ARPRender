@@ -3,6 +3,8 @@
 
 #include "Common.hlsl"
 #include "Surface.hlsl"
+#include "Light.hlsl"
+#include "Lighting.hlsl"
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex); 
