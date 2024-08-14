@@ -7,4 +7,17 @@ float3 GetIncomingLight(Surface surface, Light light)
 }
 
 
+float3 GetLighting(Surface surface)
+{
+    float3 lightCol = 0;
+    
+    for(int n = 0; n < _direcionalLightCount; n++)
+    {
+        Light light = GetDirectionLight(n);
+        lightCol += GetIncomingLight(surface, light);
+    }
+
+    return lightCol;
+}
+
 #endif

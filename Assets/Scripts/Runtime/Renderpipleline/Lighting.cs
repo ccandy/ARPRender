@@ -1,35 +1,77 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class Lighting
 {
     private static int
-        dirLightColorId = Shader.PropertyToID("_directionalLightColor"),
-        dirLightDirId = Shader.PropertyToID("_directionalLightDir");
+        dirLightColorId = Shader.PropertyToID("_directionalLightColors"),
+        dirLightDirId = Shader.PropertyToID("_directionalLightDirs"),
+        dirLightCountId = Shader.PropertyToID("_direcionalLightCount");
     
     
     private const string bufferName = "CustomLight";
+    private const int max_dirLight_count = 4;
+    
+    private int dirLightCount = 0;
+    private Vector4[] dirLightColors = new Vector4[max_dirLight_count];
+    private Vector4[] dirLightDirs = new Vector4[max_dirLight_count];
     
     private CommandBuffer cmd = new CommandBuffer{
         name = bufferName, 
     };
 
-    public void Setup(ScriptableRenderContext context)
+    public void Setup(ScriptableRenderContext context, ref CullingResults cullingResults)
     {
         cmd.BeginSample(bufferName);
-        SetupDirectionalLight();
+        NativeArray<VisibleLight> visibleLights = cullingResults.visibleLights;
+
+        for (int n = 0; n < visibleLights.Length; n++)
+        {
+            VisibleLight visibleLight = visibleLights[n];
+
+            if (visibleLight.lightType == LightType.Directional)
+            {
+                SetupDirectionalLight(visibleLight);
+            }
+        }
+        
+        
+        cmd.SetGlobalVectorArray(dirLightColorId, dirLightColors);
+        cmd.SetGlobalVectorArray(dirLightDirId, dirLightDirs);
+        cmd.SetGlobalFloat(dirLightCountId, dirLightCount);
+        
+        
         cmd.EndSample(bufferName);
         context.ExecuteCommandBuffer(cmd);
         cmd.Clear();
     }
 
-    private void SetupDirectionalLight()
+    private void SetupDirectionalLight(VisibleLight visibleLight)
     {
-        Light light = RenderSettings.sun;
-        cmd.SetGlobalVector(dirLightColorId, light.color.linear * light.intensity);
-        cmd.SetGlobalVector(dirLightDirId, -light.transform.forward);
+
+        if (dirLightCount >= max_dirLight_count)
+        {
+            return;
+        }
+
+        dirLightColors[dirLightCount] = visibleLight.finalColor;
+        dirLightDirs[dirLightCount] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        dirLightCount++;
+    }
+
+    public void ClearLighting()
+    {
+        dirLightCount = 0;
+        for (int n = 0; n < max_dirLight_count; n++)
+        {
+            dirLightColors[n] = Vector4.zero;
+            dirLightDirs[n] = Vector4.zero;
+        }
+        
+        
     }
     
 }

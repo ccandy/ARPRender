@@ -24,16 +24,22 @@ public partial class CameraRender
         {
             return;
         }
-        
         Setup();
-        _lighting.Setup(context);
+        _lighting.Setup(context, ref _cullingResults);
         ExecuteAndClearBuffer();
         DrawVisibleGeometry(useGPUInstance, useDynamicBatch);
         DrawUnsupportedShaders();
         DrawGizmos();
         Submit();
+        CleanUP();
+
     }
 
+    private void CleanUP()
+    {
+        _lighting.ClearLighting();
+    }
+    
     void Setup()
     {
         //setup camera matrix

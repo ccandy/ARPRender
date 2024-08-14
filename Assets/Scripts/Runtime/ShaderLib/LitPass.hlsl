@@ -81,8 +81,7 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     surface.color = col.rgb;
     surface.alpha = col.a;
     
-    Light light = GetDirectionLight();
-    float3 lightColor = GetIncomingLight(surface, light);
+    float3 lightColor = GetLighting(surface);
 
     float3 finalCol = lightColor * surface.color;
 

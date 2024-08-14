@@ -8,13 +8,11 @@ public class ARPipeline : RenderPipeline
     private CameraRender _cameraRender = new CameraRender();
     private ARPAsset _asset;
     
-    
     public ARPipeline(ARPAsset asset)
     {
         _asset = asset;
         if (_asset.EnableShaderBatch)
         {
-            
             GraphicsSettings.useScriptableRenderPipelineBatching = true;
             Shader.EnableKeyword("ARP_SHADERBATCH_ON");
             _asset.EnableGPUInstance = false;
