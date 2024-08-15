@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class Lighting
 {
@@ -18,23 +19,34 @@ public class Lighting
     private int dirLightCount = 0;
     private Vector4[] dirLightColors = new Vector4[max_dirLight_count];
     private Vector4[] dirLightDirs = new Vector4[max_dirLight_count];
+    private Shadows _shadows;
+    
+    
+    private ShadowSettings _shadowSettings;
     
     private CommandBuffer cmd = new CommandBuffer{
         name = bufferName, 
     };
 
-    public void Setup(ScriptableRenderContext context, ref CullingResults cullingResults)
+    public void Setup(ScriptableRenderContext context, ref CullingResults cullingResults, ShadowSettings shadowSettings)
     {
+        _shadowSettings = shadowSettings;
         cmd.BeginSample(bufferName);
         NativeArray<VisibleLight> visibleLights = cullingResults.visibleLights;
 
+        if (_shadows == null)
+        {
+            _shadows = new Shadows();
+        }
+        _shadows.Setup(context, cullingResults,_shadowSettings);
+        
         for (int n = 0; n < visibleLights.Length; n++)
         {
             VisibleLight visibleLight = visibleLights[n];
 
             if (visibleLight.lightType == LightType.Directional)
             {
-                SetupDirectionalLight(visibleLight);
+                SetupDirectionalLight(visibleLight, n);
             }
         }
         
@@ -49,7 +61,7 @@ public class Lighting
         cmd.Clear();
     }
 
-    private void SetupDirectionalLight(VisibleLight visibleLight)
+    private void SetupDirectionalLight(VisibleLight visibleLight, int index)
     {
 
         if (dirLightCount >= max_dirLight_count)
@@ -59,6 +71,7 @@ public class Lighting
 
         dirLightColors[dirLightCount] = visibleLight.finalColor;
         dirLightDirs[dirLightCount] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        _shadows.SetupDirectionalShadows(visibleLight.light, index);
         dirLightCount++;
     }
 

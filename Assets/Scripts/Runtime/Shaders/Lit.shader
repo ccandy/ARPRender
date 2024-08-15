@@ -34,6 +34,7 @@ Shader "ARP/Lit"
             #pragma shader_feature ARP_GPUINSTANCE_ON
             #pragma shader_feature ARP_SHADERBATCH_ON
             #pragma shader_feature ARP_CLIPING
+            #pragma shader_feature ARP_PREMULTIPLY_ALPHA
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFrag
             

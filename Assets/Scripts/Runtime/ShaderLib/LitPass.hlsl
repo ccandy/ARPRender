@@ -53,7 +53,7 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     
     BRDF brdf = GetBRDF(surface);
     
-    float3 lightColor = GetLighting(surface);
+    float3 lightColor = GetLighting(surface, brdf);
 
     float3 finalCol = lightColor * brdf.diffuse;
     
