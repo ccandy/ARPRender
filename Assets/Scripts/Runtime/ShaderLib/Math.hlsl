@@ -8,4 +8,15 @@ float Square(float n)
 }
 
 
+float FastSqrt(float x)
+{
+    float xhalf = 0.5 * x;
+    int i = asint(xhalf);
+    i = 0x5f375a86 - (i >> 1);
+    x = asfloat(i);
+    x = x *  (1.5f - xhalf * x * x);
+
+    return 1/x;
+}
+
 #endif
