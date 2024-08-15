@@ -40,7 +40,7 @@ protected override void Render(ScriptableRenderContext context, Camera[] cameras
             if (_cameraRender != null)
             {
                 //_cameraRender.Render(ref context, cam, _asset.EnableGPUInstance, _asset.EnableDynamicBathc);
-                _cameraRender.Render(ref context, cam, false, _asset.EnableDynamicBathc);
+                _cameraRender.Render(ref context, cam, false, _asset.EnableDynamicBathc, _asset.ShadowSettings);
             }
         }
     }

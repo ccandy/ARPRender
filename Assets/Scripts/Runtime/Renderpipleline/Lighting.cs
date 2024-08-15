@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public class Lighting
 {
@@ -18,13 +19,16 @@ public class Lighting
     private int dirLightCount = 0;
     private Vector4[] dirLightColors = new Vector4[max_dirLight_count];
     private Vector4[] dirLightDirs = new Vector4[max_dirLight_count];
+
+    private ShadowSettings _shadowSettings;
     
     private CommandBuffer cmd = new CommandBuffer{
         name = bufferName, 
     };
 
-    public void Setup(ScriptableRenderContext context, ref CullingResults cullingResults)
+    public void Setup(ScriptableRenderContext context, ref CullingResults cullingResults, ShadowSettings shadowSettings)
     {
+        _shadowSettings = shadowSettings;
         cmd.BeginSample(bufferName);
         NativeArray<VisibleLight> visibleLights = cullingResults.visibleLights;
 

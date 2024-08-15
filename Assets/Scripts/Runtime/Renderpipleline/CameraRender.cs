@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 public partial class CameraRender
 {
@@ -13,19 +15,22 @@ public partial class CameraRender
     private CullingResults _cullingResults;
 
     private Lighting _lighting = new Lighting();
+    private ShadowSettings _shadowSettings;
     
-    public void Render(ref ScriptableRenderContext context, Camera camera, bool useGPUInstance, bool useDynamicBatch)
+    
+    public void Render(ref ScriptableRenderContext context, Camera camera, bool useGPUInstance, bool useDynamicBatch, ShadowSettings shadowSettings)
     {
         this.context = context;
         this._camera = camera;
+        _shadowSettings = shadowSettings;
         PrepareBuffer();
         PrepareForSceneWindow();
-        if (!Cull())
+        if (!Cull(_shadowSettings.MaxShadowDistance))
         {
             return;
         }
         Setup();
-        _lighting.Setup(context, ref _cullingResults);
+        _lighting.Setup(context, ref _cullingResults, shadowSettings);
         ExecuteAndClearBuffer();
         DrawVisibleGeometry(useGPUInstance, useDynamicBatch);
         DrawUnsupportedShaders();
@@ -80,10 +85,11 @@ public partial class CameraRender
 
     
     
-    bool Cull()
+    bool Cull(float shadowDistance)
     {
         if (_camera.TryGetCullingParameters(out ScriptableCullingParameters parameters))
         {
+            parameters.shadowDistance = Mathf.Min(shadowDistance, _camera.farClipPlane);
             _cullingResults = context.Cull(ref parameters);
             return true;
         }

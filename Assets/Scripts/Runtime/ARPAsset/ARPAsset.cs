@@ -10,7 +10,7 @@ public class ARPAsset : RenderPipelineAsset
     //public bool EnableGPUInstance = false;
     public bool EnableDynamicBathc = false;
 
-    [SerializeField] private ShadowSettings ShadowSettings = default;
+    public ShadowSettings ShadowSettings = default;
     
     protected override RenderPipeline CreatePipeline()
     {
