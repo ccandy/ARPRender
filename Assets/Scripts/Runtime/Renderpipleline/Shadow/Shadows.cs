@@ -1,18 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-public class Shadows : MonoBehaviour
+public class Shadows
 {
-    // Start is called before the first frame update
-    void Start()
+    private const string bufferName = "Shadow Buffer";
+
+    private CommandBuffer _shadowBuffer = new CommandBuffer()
     {
-        
+        name = bufferName
+    };
+
+    private ScriptableRenderContext _context;
+    private CullingResults _cullingResults;
+    private ShadowSettings _shadowSettings;
+
+    private void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
+    {
+        _context = context;
+        _cullingResults = cullingResults;
+        _shadowSettings = shadowSettings;
     }
 
-    // Update is called once per frame
-    void Update()
+    void ExecuteBuffer()
     {
-        
+        _context.ExecuteCommandBuffer(_shadowBuffer);
+        _shadowBuffer.Clear();
     }
+    
+    
+
 }
