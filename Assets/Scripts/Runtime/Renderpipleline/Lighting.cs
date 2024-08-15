@@ -46,7 +46,7 @@ public class Lighting
 
             if (visibleLight.lightType == LightType.Directional)
             {
-                SetupDirectionalLight(visibleLight);
+                SetupDirectionalLight(visibleLight, n);
             }
         }
         
@@ -61,7 +61,7 @@ public class Lighting
         cmd.Clear();
     }
 
-    private void SetupDirectionalLight(VisibleLight visibleLight)
+    private void SetupDirectionalLight(VisibleLight visibleLight, int index)
     {
 
         if (dirLightCount >= max_dirLight_count)
@@ -71,6 +71,7 @@ public class Lighting
 
         dirLightColors[dirLightCount] = visibleLight.finalColor;
         dirLightDirs[dirLightCount] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        _shadows.SetupDirectionalShadows(visibleLight.light, index);
         dirLightCount++;
     }
 
