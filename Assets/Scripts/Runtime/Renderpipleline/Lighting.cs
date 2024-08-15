@@ -19,7 +19,9 @@ public class Lighting
     private int dirLightCount = 0;
     private Vector4[] dirLightColors = new Vector4[max_dirLight_count];
     private Vector4[] dirLightDirs = new Vector4[max_dirLight_count];
-
+    private Shadows _shadows;
+    
+    
     private ShadowSettings _shadowSettings;
     
     private CommandBuffer cmd = new CommandBuffer{
@@ -32,6 +34,12 @@ public class Lighting
         cmd.BeginSample(bufferName);
         NativeArray<VisibleLight> visibleLights = cullingResults.visibleLights;
 
+        if (_shadows == null)
+        {
+            _shadows = new Shadows();
+        }
+        _shadows.Setup(context, cullingResults,_shadowSettings);
+        
         for (int n = 0; n < visibleLights.Length; n++)
         {
             VisibleLight visibleLight = visibleLights[n];

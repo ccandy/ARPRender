@@ -17,7 +17,7 @@ public class Shadows
     private CullingResults _cullingResults;
     private ShadowSettings _shadowSettings;
 
-    private void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
+    public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
     {
         _context = context;
         _cullingResults = cullingResults;
