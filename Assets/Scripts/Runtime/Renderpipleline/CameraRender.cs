@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.FullSerializer.Internal.Converters;
+using UnityEditor.PackageManager.UI;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -29,14 +31,18 @@ public partial class CameraRender
         {
             return;
         }
-        Setup();
+
+        BeginSample();
         _lighting.Setup(context, ref _cullingResults, shadowSettings);
+        EndSample();
+        Setup();
         ExecuteAndClearBuffer();
         DrawVisibleGeometry(useGPUInstance, useDynamicBatch);
         DrawUnsupportedShaders();
         DrawGizmos();
-        Submit();
         CleanUP();
+        Submit();
+       
 
     }
 
@@ -54,8 +60,7 @@ public partial class CameraRender
             flags == CameraClearFlags.Color,
             flags == CameraClearFlags.Color ?
             _camera.backgroundColor.linear : Color.clear);
-        _cameraBuffer.BeginSample(bufferName);
-        ExecuteAndClearBuffer();
+        BeginSample();
     }
 
     void DrawVisibleGeometry(bool useGPUInstance, bool useDynamicBatch)
@@ -96,15 +101,27 @@ public partial class CameraRender
 
         return false;
     }
+
+    private void BeginSample()
+    {
+        _cameraBuffer.BeginSample(bufferName);
+        ExecuteAndClearBuffer();
+    }
+
+    private void EndSample()
+    {
+        _cameraBuffer.EndSample(bufferName);
+        ExecuteAndClearBuffer();
+    } 
     
-    void Submit()
+    private void Submit()
     {
         _cameraBuffer.EndSample(bufferName);
         ExecuteAndClearBuffer();
         context.Submit();
     }
 
-    void ExecuteAndClearBuffer()
+    private void ExecuteAndClearBuffer()
     {
         context.ExecuteCommandBuffer(_cameraBuffer);
         _cameraBuffer.Clear();

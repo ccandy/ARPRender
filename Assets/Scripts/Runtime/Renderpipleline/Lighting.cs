@@ -39,7 +39,18 @@ public class Lighting
             _shadows = new Shadows();
         }
         _shadows.Setup(context, cullingResults,_shadowSettings);
+
+        SetupLights(visibleLights);
         
+        _shadows.Render();
+        
+        cmd.EndSample(bufferName);
+        context.ExecuteCommandBuffer(cmd);
+        cmd.Clear();
+    }
+
+    private void SetupLights(NativeArray<VisibleLight> visibleLights)
+    {
         for (int n = 0; n < visibleLights.Length; n++)
         {
             VisibleLight visibleLight = visibleLights[n];
@@ -54,13 +65,10 @@ public class Lighting
         cmd.SetGlobalVectorArray(dirLightColorId, dirLightColors);
         cmd.SetGlobalVectorArray(dirLightDirId, dirLightDirs);
         cmd.SetGlobalFloat(dirLightCountId, dirLightCount);
-        
-        
-        cmd.EndSample(bufferName);
-        context.ExecuteCommandBuffer(cmd);
-        cmd.Clear();
     }
 
+    
+    
     private void SetupDirectionalLight(VisibleLight visibleLight, int index)
     {
 
@@ -84,7 +92,7 @@ public class Lighting
             dirLightDirs[n] = Vector4.zero;
         }
         
-        
+        _shadows.CleanUp();
     }
     
 }
