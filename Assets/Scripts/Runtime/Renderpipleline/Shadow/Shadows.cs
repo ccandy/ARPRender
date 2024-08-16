@@ -60,10 +60,19 @@ public class Shadows
         _shadowBuffer.GetTemporaryRT(dirShadowAtlasId, altasSize,altasSize, 24, FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
         _shadowBuffer.SetRenderTarget(dirShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
         _shadowBuffer.ClearRenderTarget(true, false, Color.clear);
-        _context.ExecuteCommandBuffer(_shadowBuffer);
-        _shadowBuffer.Clear();
-        
+        _shadowBuffer.BeginSample(bufferName);
+        ExecuteBuffer();
+
+        for (int n = 0; n < MaxDirectionalShadow; n++)
+        {
+            
+        }
+        _shadowBuffer.EndSample(bufferName);
+        ExecuteBuffer();
+
     }
+    
+    
     
     
     void ExecuteBuffer()
