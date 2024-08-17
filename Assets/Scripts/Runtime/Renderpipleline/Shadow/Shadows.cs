@@ -9,12 +9,16 @@ using UnityEngine.Rendering;
 
 public class Shadows
 {
-    
-    //Shader PropertyID
-    private static int dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
-    
     private const string bufferName = "Shadow Buffer";
     private const int MaxDirectionalShadow = 4;
+    
+    //Shader PropertyID
+    private static int
+        dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas"),
+        dirShadowMatricsId = Shader.PropertyToID("_DirectonalShadowMatrics");
+    
+    //Shadow Data
+    private Matrix4x4[] dirShadowMatrics = new Matrix4x4[MaxDirectionalShadow];
     
     private CommandBuffer _shadowBuffer = new CommandBuffer()
     {
@@ -73,9 +77,9 @@ public class Shadows
         {
             RenderDirectionalShadow(n, tileSize, split);
         }
+        _shadowBuffer.SetGlobalMatrixArray(dirShadowMatricsId, dirShadowMatrics);
         _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
-
     }
     
     private void RenderDirectionalShadow(int lightIndex, int tileSize, int split)
@@ -88,8 +92,10 @@ public class Shadows
         var shadowSetting = new ShadowDrawingSettings(_cullingResults, vlightIndex);
         _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(vlightIndex, 0, 1, Vector3.zero, tileSize,
             0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
-        shadowSetting.splitData = splitData;
-        SetViewPort(lightIndex,split, tileSize);
+        shadowSetting.splitData = splitData; 
+        Vector2 offset = SetViewPort(lightIndex,split, tileSize);
+        Matrix4x4 viewProjMatrix = viewMatrix * projMatrix;
+        dirShadowMatrics[lightIndex] = ConvertToAltasMatrix(viewProjMatrix, offset, split);
         _shadowBuffer.SetViewProjectionMatrices(viewMatrix, projMatrix);
         ExecuteBuffer();
         
@@ -122,12 +128,44 @@ public class Shadows
         _shadowBuffer.Clear();
     }
 
-    private void SetViewPort(int index, int split, int tilesize)
+    private Vector2 SetViewPort(int index, int split, int tilesize)
     {
         Vector2 offset = new Vector2(index % split, index / split);
         Rect viewRect = new Rect(offset.x * tilesize, offset.y * tilesize, tilesize, tilesize);
         _shadowBuffer.SetViewport(viewRect);
         ExecuteBuffer();
+
+        return offset;
     }
+
+    private Matrix4x4 ConvertToAltasMatrix(Matrix4x4 m, Vector2 offset, int split)
+    {
+        if (SystemInfo.usesReversedZBuffer)
+        {
+            m.m20 = -m.m20;
+            m.m21 = -m.m21;
+            m.m22 = -m.m22;
+            m.m23 = -m.m23;
+        }
+
+        float scale = 1f / split;
+        m.m00 = (0.5f * (m.m00 + m.m30) + offset.x * m.m30) * scale;
+        m.m01 = (0.5f * (m.m01 + m.m31) + offset.x * m.m31) * scale;
+        m.m02 = (0.5f * (m.m02 + m.m32) + offset.x * m.m32) * scale;
+        m.m03 = (0.5f * (m.m03 + m.m33) + offset.x * m.m33) * scale;
+        m.m10 = (0.5f * (m.m10 + m.m30) + offset.y * m.m30) * scale;
+        m.m11 = (0.5f * (m.m11 + m.m31) + offset.y * m.m31) * scale;
+        m.m12 = (0.5f * (m.m12 + m.m32) + offset.y * m.m32) * scale;
+        m.m13 = (0.5f * (m.m13 + m.m33) + offset.y * m.m33) * scale;
+        m.m20 = 0.5f * (m.m20 + m.m30);
+        m.m21 = 0.5f * (m.m21 + m.m31);
+        m.m22 = 0.5f * (m.m22 + m.m32);
+        m.m23 = 0.5f * (m.m23 + m.m33);
+        
+        
+        
+        return m;
+    }
+    
     
 }
