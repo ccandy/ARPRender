@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -13,7 +14,7 @@ public class Shadows
     private static int dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas");
     
     private const string bufferName = "Shadow Buffer";
-    private const int MaxDirectionalShadow = 1;
+    private const int MaxDirectionalShadow = 4;
     
     private CommandBuffer _shadowBuffer = new CommandBuffer()
     {
@@ -65,16 +66,19 @@ public class Shadows
         _shadowBuffer.BeginSample(bufferName);
         ExecuteBuffer();
 
-        for (int n = 0; n < MaxDirectionalShadow; n++)
+        int split = MaxDirectionalShadow > 1 ? 2 : 1;
+        int tileSize = (int)_shadowSettings.DirecionalShadowSetting.AltasSize / split;
+        int shadowCount = Mathf.Min(_directionalShadowCount, MaxDirectionalShadow);
+        for (int n = 0; n < shadowCount; n++)
         {
-            RenderDirectionalShadow(n, (int)_shadowSettings.DirecionalShadowSetting.AltasSize);
+            RenderDirectionalShadow(n, tileSize, split);
         }
         _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
 
     }
     
-    private void RenderDirectionalShadow(int lightIndex, int tileSize)
+    private void RenderDirectionalShadow(int lightIndex, int tileSize, int split)
     {
         NativeArray<VisibleLight> visibleLights = _cullingResults.visibleLights;
         DirectionalShadow directionalShadow = _directionalShadows[lightIndex];
@@ -85,8 +89,10 @@ public class Shadows
         _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(vlightIndex, 0, 1, Vector3.zero, tileSize,
             0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
         shadowSetting.splitData = splitData;
+        SetViewPort(lightIndex,split, tileSize);
         _shadowBuffer.SetViewProjectionMatrices(viewMatrix, projMatrix);
         ExecuteBuffer();
+        
         _context.DrawShadows(ref shadowSetting);
     }
     void ExecuteBuffer()
@@ -115,7 +121,13 @@ public class Shadows
         _context.ExecuteCommandBuffer(_shadowBuffer);
         _shadowBuffer.Clear();
     }
-    
-    
+
+    private void SetViewPort(int index, int split, int tilesize)
+    {
+        Vector2 offset = new Vector2(index % split, index / split);
+        Rect viewRect = new Rect(offset.x * tilesize, offset.y * tilesize, tilesize, tilesize);
+        _shadowBuffer.SetViewport(viewRect);
+        ExecuteBuffer();
+    }
     
 }
