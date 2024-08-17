@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Unity.Collections;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -72,19 +73,21 @@ public class Shadows
         ExecuteBuffer();
 
     }
-
-
-
-    private void RenderDirectionalShadow(int lightIndex, int altasSize)
+    
+    private void RenderDirectionalShadow(int lightIndex, int tileSize)
     {
         NativeArray<VisibleLight> visibleLights = _cullingResults.visibleLights;
         DirectionalShadow directionalShadow = _directionalShadows[lightIndex];
+        int vlightIndex = directionalShadow.visibleLightIndex;
         VisibleLight visibleLight = visibleLights[directionalShadow.visibleLightIndex];
 
-        var shadowSetting = new ShadowDrawingSettings(_cullingResults, directionalShadow.visibleLightIndex);
-        
-
-
+        var shadowSetting = new ShadowDrawingSettings(_cullingResults, vlightIndex);
+        _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(vlightIndex, 0, 1, Vector3.zero, tileSize,
+            0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
+        shadowSetting.splitData = splitData;
+        _shadowBuffer.SetViewProjectionMatrices(viewMatrix, projMatrix);
+        ExecuteBuffer();
+        _context.DrawShadows(ref shadowSetting);
     }
     void ExecuteBuffer()
     {
