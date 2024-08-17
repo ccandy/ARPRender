@@ -25,5 +25,6 @@
 #include "BRDF.hlsl"
 #include "Light.hlsl"
 #include "Lighting.hlsl"
+#include "Shadow.hlsl"
 
 #endif
