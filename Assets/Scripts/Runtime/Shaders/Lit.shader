@@ -41,5 +41,23 @@ Shader "ARP/Lit"
             
             ENDHLSL
         }
+
+        Pass
+        {
+            Tags
+            {
+                "LightMode" = "ShadowCaster"
+            }
+            
+            ColorMask 0
+            HLSLPROGRAM
+            
+            #include "Assets/Scripts/Runtime/ShaderLib/ShadowCaster.hlsl"
+            #pragma shader_feature ARP_CLIPING
+            #pragma vertex ShadowCasterPassVertex
+            #pragma fragment ShadowCasterPassFragement
+            
+            ENDHLSL
+        }
     }
 }
