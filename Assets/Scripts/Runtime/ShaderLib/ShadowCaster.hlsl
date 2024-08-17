@@ -38,7 +38,7 @@ void ShadowCasterPassFragement(VertexShadowOutput input)
     float4 mainTex = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
     half4 col = baseColor * mainTex;
     #if defined(ARP_CLIPING)
-        clip(col.a - _CutOff)
+        clip(col.a - _CutOff);
     #endif
 }
 
