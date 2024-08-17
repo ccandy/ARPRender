@@ -15,10 +15,11 @@ public class Shadows
     //Shader PropertyID
     private static int
         dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas"),
-        dirShadowMatricsId = Shader.PropertyToID("_DirectonalShadowMatrics");
+        dirShadowMatricsId = Shader.PropertyToID("_DirectonalShadowMatrics"),
+        dirShadowDataId = Shader.PropertyToID("_DirectonalShadowData");
     
     //Shadow Data
-    private Matrix4x4[] dirShadowMatrics = new Matrix4x4[MaxDirectionalShadow];
+    private Matrix4x4[] _dirShadowMatrics = new Matrix4x4[MaxDirectionalShadow];
     
     private CommandBuffer _shadowBuffer = new CommandBuffer()
     {
@@ -39,6 +40,7 @@ public class Shadows
     }
 
     private DirectionalShadow[] _directionalShadows = new DirectionalShadow[MaxDirectionalShadow];
+    private Vector4[] _directionalShadowData = new Vector4[MaxDirectionalShadow];
 
     public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
     {
@@ -73,29 +75,33 @@ public class Shadows
         int split = MaxDirectionalShadow > 1 ? 2 : 1;
         int tileSize = (int)_shadowSettings.DirecionalShadowSetting.AltasSize / split;
         int shadowCount = Mathf.Min(_directionalShadowCount, MaxDirectionalShadow);
+        NativeArray<VisibleLight> visibleLights = _cullingResults.visibleLights;
         for (int n = 0; n < shadowCount; n++)
         {
-            RenderDirectionalShadow(n, tileSize, split);
+            DirectionalShadow directionalShadow = _directionalShadows[n];
+            int vlightIndex = directionalShadow.visibleLightIndex;
+            Light vLight = visibleLights[vlightIndex].light;
+            RenderDirectionalShadow(n, tileSize, split, vlightIndex, vLight);
         }
-        _shadowBuffer.SetGlobalMatrixArray(dirShadowMatricsId, dirShadowMatrics);
+        _shadowBuffer.SetGlobalMatrixArray(dirShadowMatricsId, _dirShadowMatrics);
+        _shadowBuffer.SetGlobalVectorArray(dirShadowDataId, _directionalShadowData);
         _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
     }
     
-    private void RenderDirectionalShadow(int lightIndex, int tileSize, int split)
+    private void RenderDirectionalShadow(int lightIndex, int tileSize, int split, int vlightIndex, Light light)
     {
-        NativeArray<VisibleLight> visibleLights = _cullingResults.visibleLights;
-        DirectionalShadow directionalShadow = _directionalShadows[lightIndex];
-        int vlightIndex = directionalShadow.visibleLightIndex;
-        VisibleLight visibleLight = visibleLights[directionalShadow.visibleLightIndex];
-
+        
         var shadowSetting = new ShadowDrawingSettings(_cullingResults, vlightIndex);
         _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(vlightIndex, 0, 1, Vector3.zero, tileSize,
             0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
         shadowSetting.splitData = splitData; 
         Vector2 offset = SetViewPort(lightIndex,split, tileSize);
         Matrix4x4 viewProjMatrix = viewMatrix * projMatrix;
-        dirShadowMatrics[lightIndex] = ConvertToAltasMatrix(viewProjMatrix, offset, split);
+        
+        _dirShadowMatrics[lightIndex] = ConvertToAltasMatrix(viewProjMatrix, offset, split);
+        _directionalShadowData[lightIndex].x = light.shadowStrength;
+        
         _shadowBuffer.SetViewProjectionMatrices(viewMatrix, projMatrix);
         ExecuteBuffer();
         
@@ -117,7 +123,7 @@ public class Shadows
         
         DirectionalShadow directionalShadow = new DirectionalShadow();
         directionalShadow.visibleLightIndex = lightIndex;
-
+        
         _directionalShadows[_directionalShadowCount++] = directionalShadow;
     }
 
@@ -166,6 +172,5 @@ public class Shadows
         
         return m;
     }
-    
     
 }
