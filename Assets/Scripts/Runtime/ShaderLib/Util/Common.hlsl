@@ -22,9 +22,9 @@
 
 #include "Math.hlsl"
 #include "Surface.hlsl"
-#include "BRDF.hlsl"
-#include "Light.hlsl"
-#include "Lighting.hlsl"
-#include "Shadow.hlsl"
+#include "Assets/Scripts/Runtime/ShaderLib/PBR/BRDF.hlsl"
+#include "Assets/Scripts/Runtime/ShaderLib/Light/Light.hlsl"
+#include "Assets/Scripts/Runtime/ShaderLib/Light/Lighting.hlsl"
+#include "Assets/Scripts/Runtime/ShaderLib/Shadow//Shadow.hlsl"
 
 #endif

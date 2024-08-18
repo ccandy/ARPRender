@@ -52,7 +52,7 @@ Shader "ARP/Lit"
             ColorMask 0
             HLSLPROGRAM
             
-            #include "Assets/Scripts/Runtime/ShaderLib/ShadowCaster.hlsl"
+            #include "Assets/Scripts/Runtime/ShaderLib/Shadow/ShadowCaster.hlsl"
             #pragma shader_feature ARP_CLIPING
             #pragma vertex ShadowCasterPassVertex
             #pragma fragment ShadowCasterPassFragement
