@@ -20,10 +20,13 @@ public class Shadows
     private static int
         dirShadowAtlasId = Shader.PropertyToID("_DirectionalShadowAtlas"),
         dirShadowMatricsId = Shader.PropertyToID("_DirectonalShadowMatrics"),
-        dirShadowDataId = Shader.PropertyToID("_DirectonalShadowData");
+        dirShadowDataId = Shader.PropertyToID("_DirectonalShadowData"),
+        cascadeCountId = Shader.PropertyToID("_CascadeCount"),
+        cascadeSphereCullingSphereId = Shader.PropertyToID("_CascadeSphereCullingSphere");
     
     //Shadow Data
     private Matrix4x4[] _dirShadowMatrics = new Matrix4x4[MaxDirectionalShadow * MaxCasacde];
+    private Vector4[] _cascadeCullingSpheres = new Vector4[MaxCasacde];
     
     private CommandBuffer _shadowBuffer = new CommandBuffer()
     {
@@ -104,8 +107,10 @@ public class Shadows
             Light vLight = visibleLights[vlightIndex].light;
             RenderDirectionalShadow(n, tileSize, split, vlightIndex, vLight, casacdeCount, ratios);
         }
+        _shadowBuffer.SetGlobalFloat(cascadeCountId, casacdeCount);
         _shadowBuffer.SetGlobalMatrixArray(dirShadowMatricsId, _dirShadowMatrics);
         _shadowBuffer.SetGlobalVectorArray(dirShadowDataId, _directionalShadowData);
+        _shadowBuffer.SetGlobalVectorArray(cascadeSphereCullingSphereId, _cascadeCullingSpheres);
         _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
     }
@@ -121,6 +126,13 @@ public class Shadows
                     cascadeCount, ratio, tileSize,
                     0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData))
             {
+                if (lightIndex == 0)
+                {
+                    Vector4 cullingSphere = splitData.cullingSphere;
+                    cullingSphere.w *= cullingSphere.w;
+                    _cascadeCullingSpheres[n] = cullingSphere;
+                }
+                
                 shadowSetting.splitData = splitData;
                 int tileIndex = tileOffset + n;
                 Vector2 offset = SetViewPort(tileIndex,split, tileSize);
@@ -130,7 +142,6 @@ public class Shadows
                 ExecuteBuffer();
                 _context.DrawShadows(ref shadowSetting);
             }
-            
         }
         
         _directionalShadowData[lightIndex].x = light.shadowStrength;
