@@ -1,7 +1,7 @@
 #ifndef ARP_SHADOWCASTER_INCLUDE
 #define ARP_SHADOWCASTER_INCLUDE
 
-#include "Common.hlsl"
+#include "Assets/Scripts/Runtime/ShaderLib/Util/Common.hlsl"
 
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);

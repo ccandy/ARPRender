@@ -14,14 +14,16 @@ struct Light
 {
     float3 color;
     float3 lightDir;
+    float atten;
 };
 
 Light GetDirectionLight(int index)
 {
     Light light;
-    light.color = _directionalLightColors[index];
-    light.lightDir = _directionalLightDirs[index];
-
+    light.color     = _directionalLightColors[index];
+    light.lightDir  = _directionalLightDirs[index];
+    light.atten     = 1;
+    
     return light;
 }
 
