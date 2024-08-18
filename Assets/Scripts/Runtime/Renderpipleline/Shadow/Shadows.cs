@@ -81,6 +81,7 @@ public class Shadows
         int altasSize = (int)_shadowSettings.DirecionalShadowSetting.AltasSize;
         RenderTextureFormat format = GetFormatForShadowMap();
         _shadowBuffer.GetTemporaryRT(dirShadowAtlasId, altasSize,altasSize, 24, FilterMode.Bilinear, format);
+        
         _shadowBuffer.SetRenderTarget(dirShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
         _shadowBuffer.ClearRenderTarget(true, false, Color.clear);
         _shadowBuffer.BeginSample(bufferName);
@@ -111,9 +112,9 @@ public class Shadows
             0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
         shadowSetting.splitData = splitData; 
         Vector2 offset = SetViewPort(lightIndex,split, tileSize);
-        Matrix4x4 viewProjMatrix = viewMatrix * projMatrix;
+        Matrix4x4 projVeiwMatrix = projMatrix*viewMatrix;
         
-        _dirShadowMatrics[lightIndex] = ConvertToAltasMatrix(viewProjMatrix, offset, split);
+        _dirShadowMatrics[lightIndex] = ConvertToAltasMatrix(projVeiwMatrix, offset, split);
         _directionalShadowData[lightIndex].x = light.shadowStrength;
         _directionalShadowData[lightIndex].y = lightIndex;
         
@@ -161,14 +162,12 @@ public class Shadows
 
     private Matrix4x4 ConvertToAltasMatrix(Matrix4x4 m, Vector2 offset, int split)
     {
-        if (SystemInfo.usesReversedZBuffer)
-        {
+        if (SystemInfo.usesReversedZBuffer) {
             m.m20 = -m.m20;
             m.m21 = -m.m21;
             m.m22 = -m.m22;
             m.m23 = -m.m23;
         }
-
         float scale = 1f / split;
         m.m00 = (0.5f * (m.m00 + m.m30) + offset.x * m.m30) * scale;
         m.m01 = (0.5f * (m.m01 + m.m31) + offset.x * m.m31) * scale;
@@ -182,10 +181,8 @@ public class Shadows
         m.m21 = 0.5f * (m.m21 + m.m31);
         m.m22 = 0.5f * (m.m22 + m.m32);
         m.m23 = 0.5f * (m.m23 + m.m33);
-        
-        
-        
         return m;
+        
     }
     
 }
