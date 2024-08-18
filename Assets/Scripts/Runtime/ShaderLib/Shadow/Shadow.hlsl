@@ -2,12 +2,13 @@
 #define ARP_SHADOW_INCLUDE
 
 #define MAX_SHADOWED_DIRECTIONAL_COUNT 4
+#define MAX_CASACDE_COUNT 4
 //To sample shadowmap, we need TEXTURE2D_SHADOW and SAMPLER_CMP
 TEXTURE2D_SHADOW(_DirectionalShadowAtlas);
 SAMPLER_CMP(sampler_DirectionalShadowAtlas);
 
 CBUFFER_START(_CustomShadows)
-    float4x4 _DirectonalShadowMatrics[MAX_SHADOWED_DIRECTIONAL_COUNT];
+    float4x4 _DirectonalShadowMatrics[MAX_SHADOWED_DIRECTIONAL_COUNT * MAX_CASACDE_COUNT];
     float4 _DirectonalShadowData[MAX_SHADOWED_DIRECTIONAL_COUNT];
 CBUFFER_END
 
@@ -46,9 +47,5 @@ float GetDirectionalAtten(Surface surface, DirectionalShadowData data)
     
     return shadowAtten;
 }
-
-
-
-
 
 #endif
