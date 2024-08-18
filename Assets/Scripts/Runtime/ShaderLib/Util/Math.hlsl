@@ -19,4 +19,9 @@ float FastSqrt(float x)
     return 1/x;
 }
 
+float DistanceSquared(float pA, float pB)
+{
+    return dot(pA - pB, pA - pB);
+}
+
 #endif
