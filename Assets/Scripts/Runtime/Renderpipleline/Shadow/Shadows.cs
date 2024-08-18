@@ -5,6 +5,7 @@ using System.Data;
 using Unity.Collections;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Rendering;
 
 public class Shadows
@@ -63,10 +64,23 @@ public class Shadows
         }
     }
 
+    private RenderTextureFormat GetFormatForShadowMap()
+    {
+        if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Shadowmap))
+        {
+            return RenderTextureFormat.Shadowmap;
+        }
+        else
+        {
+            return RenderTextureFormat.Depth;
+        }
+    }
+
     private void RenderDirectionalShadows()
     {
         int altasSize = (int)_shadowSettings.DirecionalShadowSetting.AltasSize;
-        _shadowBuffer.GetTemporaryRT(dirShadowAtlasId, altasSize,altasSize, 24, FilterMode.Bilinear, RenderTextureFormat.Shadowmap);
+        RenderTextureFormat format = GetFormatForShadowMap();
+        _shadowBuffer.GetTemporaryRT(dirShadowAtlasId, altasSize,altasSize, 24, FilterMode.Bilinear, format);
         _shadowBuffer.SetRenderTarget(dirShadowAtlasId, RenderBufferLoadAction.DontCare, RenderBufferStoreAction.Store);
         _shadowBuffer.ClearRenderTarget(true, false, Color.clear);
         _shadowBuffer.BeginSample(bufferName);
@@ -101,6 +115,7 @@ public class Shadows
         
         _dirShadowMatrics[lightIndex] = ConvertToAltasMatrix(viewProjMatrix, offset, split);
         _directionalShadowData[lightIndex].x = light.shadowStrength;
+        _directionalShadowData[lightIndex].y = lightIndex;
         
         _shadowBuffer.SetViewProjectionMatrices(viewMatrix, projMatrix);
         ExecuteBuffer();
