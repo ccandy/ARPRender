@@ -2,7 +2,6 @@
 #define ARP_SHADOW_INCLUDE
 
 #define MAX_SHADOWED_DIRECTIONAL_COUNT 4
-#define SAMPLE_TEXTURE2D_SHADOW(textureName, samplerName, coord3)                    textureName.SampleCmpLevelZero(samplerName, (coord3).xy, (coord3).z)
 //To sample shadowmap, we need TEXTURE2D_SHADOW and SAMPLER_CMP
 TEXTURE2D_SHADOW(_DirectionalShadowAtlas);
 SAMPLER_CMP(sampler_DirectionalShadowAtlas);
