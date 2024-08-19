@@ -34,11 +34,12 @@ float3 DirectBRDF(Surface surface, BRDF brdf, Light light)
 
 float3 GetLighting(Surface surface, BRDF brdf)
 {
+    ShadowData shadowdata = GetShadowData(surface);
     float3 lightCol = 0;
     for(int n = 0; n < _direcionalLightCount; n++)
     {
         Light light = GetDirectionLight(n);
-        DirectionalShadowData shadowData = GetDirectionalShadowData(n);
+        DirectionalShadowData shadowData = GetDirectionalShadowData(n,shadowdata);
         float ShadowAtten = GetDirectionalAtten(surface, shadowData);
         lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light) * ShadowAtten;
     }
