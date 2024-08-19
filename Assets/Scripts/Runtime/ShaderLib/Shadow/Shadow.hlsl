@@ -2,15 +2,41 @@
 #define ARP_SHADOW_INCLUDE
 
 #define MAX_SHADOWED_DIRECTIONAL_COUNT 4
-#define SAMPLE_TEXTURE2D_SHADOW(textureName, samplerName, coord3)                    textureName.SampleCmpLevelZero(samplerName, (coord3).xy, (coord3).z)
+#define MAX_CASACDE_COUNT 4
 //To sample shadowmap, we need TEXTURE2D_SHADOW and SAMPLER_CMP
 TEXTURE2D_SHADOW(_DirectionalShadowAtlas);
 SAMPLER_CMP(sampler_DirectionalShadowAtlas);
 
 CBUFFER_START(_CustomShadows)
-    float4x4 _DirectonalShadowMatrics[MAX_SHADOWED_DIRECTIONAL_COUNT];
+    float4x4 _DirectonalShadowMatrics[16];
     float4 _DirectonalShadowData[MAX_SHADOWED_DIRECTIONAL_COUNT];
+    float4 _CascadeSphereCullingSphere[MAX_CASACDE_COUNT];
+    int _CascadeCount;
 CBUFFER_END
+
+struct ShadowData
+{
+    int cascadeIndex;
+};
+
+ShadowData GetShadowData(Surface surface)
+{
+    ShadowData data;
+    int i;
+    for(i = 0; i <_CascadeCount; i++)
+    {
+        float4 sphere = _CascadeSphereCullingSphere[i];
+        float distanceSqr = DistanceSquared(surface.positionWS, sphere.xyz);
+        if(distanceSqr < sphere.w)
+        {
+            break;
+        }
+    }
+    
+    data.cascadeIndex = i;
+
+    return data;
+}
 
 struct DirectionalShadowData
 {
@@ -18,13 +44,13 @@ struct DirectionalShadowData
     int tileIndex;
 };
 
-DirectionalShadowData GetDirectionalShadowData(int lightIndex)
+DirectionalShadowData GetDirectionalShadowData(int lightIndex,ShadowData shadowdata)
 {
     DirectionalShadowData directionalshadowdata;
     
     float4 data = _DirectonalShadowData[lightIndex];
     directionalshadowdata.strength = data.x;
-    directionalshadowdata.tileIndex = data.y;
+    directionalshadowdata.tileIndex = data.y + shadowdata.cascadeIndex;
 
     return directionalshadowdata;
 }
@@ -47,9 +73,5 @@ float GetDirectionalAtten(Surface surface, DirectionalShadowData data)
     
     return shadowAtten;
 }
-
-
-
-
 
 #endif
