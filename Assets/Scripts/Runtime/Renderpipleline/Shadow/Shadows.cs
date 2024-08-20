@@ -108,8 +108,9 @@ public class Shadows
         _shadowBuffer.SetGlobalVectorArray(dirShadowDataId, _directionalShadowData);
         _shadowBuffer.SetGlobalVectorArray(cascadeSphereCullingSphereId, _cascadeCullingSpheres);
         _shadowBuffer.SetGlobalFloat(shadowDistanceId, _shadowSettings.MaxShadowDistance);
+        float f = 1f - _shadowSettings.DirecionalShadowSetting.cascadeFade;
         _shadowBuffer.SetGlobalVector(shadowDistanceFadeId, new Vector4(1/_shadowSettings.MaxShadowDistance, 
-            1/_shadowSettings.DistanceFade));
+            1/_shadowSettings.DistanceFade,1f / (1f - f * f)));
         _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
     }
