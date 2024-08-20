@@ -10,6 +10,7 @@ struct Surface
     float metallic;
     float roughness;
     float alpha;
+    float depth;
 };
 
 Surface GetSurface(float4 col, float3 normal, float3 posWS, float roughness, float metallic)
@@ -23,6 +24,8 @@ Surface GetSurface(float4 col, float3 normal, float3 posWS, float roughness, flo
     surface.roughness = roughness;
     surface.metallic = metallic;
     surface.viewDir = normalize(_WorldSpaceCameraPos - posWS);
+    surface.depth = -TransformWorldToView(posWS).z;
+    
     return surface;
 }
 

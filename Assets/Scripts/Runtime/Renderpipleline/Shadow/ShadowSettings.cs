@@ -6,7 +6,9 @@ using UnityEngine;
 [System.Serializable]
 public class ShadowSettings
 {
-   [Min(0f)] public float MaxShadowDistance = 10;
+   [Min(0.0001f)] public float MaxShadowDistance = 10;
+   [Range(0.001f, 1f)] public float DistanceFade = 0.1f;
+   
    public enum ShadowMapSize
    {
       _256 = 256,
