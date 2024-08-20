@@ -21,11 +21,16 @@ struct ShadowData
     float shadowStrength;
 };
 
+
+float FadeShadowStrength(float distance, float scale, float fade)
+{
+    return saturate((1 - distance * scale) * fade);
+}
+
 ShadowData GetShadowData(Surface surface)
 {
     ShadowData data;
-    float shadowDistance = _ShadowDistanceFade.x;
-    data.shadowStrength = surface.depth < shadowDistance.x ? 1.0 : 0.0;
+    data.shadowStrength = FadeShadowStrength(surface.depth, _ShadowDistanceFade.x, _ShadowDistanceFade.y);
     int i;
     for(i = 0; i <_CascadeCount; i++)
     {
