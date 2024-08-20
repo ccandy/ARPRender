@@ -12,7 +12,7 @@ CBUFFER_START(_CustomShadows)
     float4 _DirectonalShadowData[MAX_SHADOWED_DIRECTIONAL_COUNT];
     float4 _CascadeSphereCullingSphere[MAX_CASACDE_COUNT];
     int _CascadeCount;
-    float _ShadowDistance;
+    float4 _ShadowDistanceFade;
 CBUFFER_END
 
 struct ShadowData
@@ -24,7 +24,8 @@ struct ShadowData
 ShadowData GetShadowData(Surface surface)
 {
     ShadowData data;
-    data.shadowStrength = surface.depth < _ShadowDistance ? 1.0 : 0.0;
+    float shadowDistance = _ShadowDistanceFade.x;
+    data.shadowStrength = surface.depth < shadowDistance.x ? 1.0 : 0.0;
     int i;
     for(i = 0; i <_CascadeCount; i++)
     {
