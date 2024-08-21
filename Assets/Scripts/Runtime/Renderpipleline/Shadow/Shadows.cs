@@ -143,7 +143,7 @@ public class Shadows
             _context.DrawShadows(ref shadowSetting);
         }
         _directionalShadowData[lightIndex].x = light.shadowStrength;
-        _directionalShadowData[lightIndex].y = lightIndex;
+        _directionalShadowData[lightIndex].y = lightIndex * cascadeCount;
     }
     void ExecuteBuffer()
     {
