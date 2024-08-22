@@ -11,7 +11,6 @@ CBUFFER_START(_CustomShadows)
     float4x4 _DirectonalShadowMatrics[16];
     float4 _DirectonalShadowData[MAX_SHADOWED_DIRECTIONAL_COUNT];
     float4 _CascadeSphereCullingSphere[MAX_CASACDE_COUNT];
-    int _TileIndexs[MAX_SHADOWED_DIRECTIONAL_COUNT];
     int _CascadeCount;
     float4 _ShadowDistanceFade;
 CBUFFER_END
@@ -69,7 +68,7 @@ DirectionalShadowData GetDirectionalShadowData(int lightIndex,ShadowData shadowd
     
     float4 data = _DirectonalShadowData[lightIndex];
     directionalshadowdata.strength = shadowdata.shadowStrength;
-    directionalshadowdata.tileIndex = data.y + shadowdata.cascadeIndex;
+    directionalshadowdata.tileIndex = data.y *_CascadeCount+ shadowdata.cascadeIndex;
     return directionalshadowdata;
 }
 
