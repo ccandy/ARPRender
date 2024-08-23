@@ -18,12 +18,13 @@ public class Shadows
         cascadeCountId = Shader.PropertyToID("_CascadeCount"),
         cascadeSphereCullingSphereId = Shader.PropertyToID("_CascadeSphereCullingSphere"),
         shadowDistanceId = Shader.PropertyToID("_ShadowDistance"),
-        shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade");
+        shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade"),
+        shadowCascadeDataId = Shader.PropertyToID("_ShadowCascadeData");
     
     //Shadow Data
     private Matrix4x4[] _dirShadowMatrics = new Matrix4x4[MaxDirectionalShadow * MaxCasacde];
     private Vector4[] _cascadeCullingSpheres = new Vector4[MaxCasacde];
-    
+    private Vector4[] _cascadeShadowData = new Vector4[MaxCasacde];
     private CommandBuffer _shadowBuffer = new CommandBuffer()
     {
         name = bufferName
@@ -103,6 +104,7 @@ public class Shadows
             Light vLight = visibleLights[vlightIndex].light;
             RenderDirectionalShadow(n, tileSize, split, vlightIndex, vLight, casacdeCount, ratios);
         }
+        _shadowBuffer.SetGlobalVectorArray(shadowCascadeDataId, _cascadeShadowData);
         _shadowBuffer.SetGlobalMatrixArray(dirShadowMatricsId, _dirShadowMatrics);
         _shadowBuffer.SetGlobalInt(cascadeCountId, casacdeCount);
         _shadowBuffer.SetGlobalVectorArray(dirShadowDataId, _directionalShadowData);
@@ -128,9 +130,11 @@ public class Shadows
             
             if (lightIndex == 0)
             {
-                Vector4 cullingSphere = splitData.cullingSphere;
+                /*Vector4 cullingSphere = splitData.cullingSphere;
                 cullingSphere.w *= cullingSphere.w;
-                _cascadeCullingSpheres[n] = cullingSphere;
+                _cascadeCullingSpheres[n] = cullingSphere;*/
+                Vector4 cullingSphere = splitData.cullingSphere;
+                SetCascadeData(n, cullingSphere,tileSize);
             }
             
             shadowSetting.splitData = splitData;
@@ -217,5 +221,12 @@ public class Shadows
         return m;
         
     }
-    
+
+
+    private void SetCascadeData(int index, Vector4 cullingSphere, int tileIndex)
+    {
+        _cascadeShadowData[index].x = 1 / cullingSphere.w;
+        cullingSphere.w *= cullingSphere.w;
+        _cascadeCullingSpheres[index] = cullingSphere;
+    }
 }
