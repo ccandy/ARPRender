@@ -135,6 +135,8 @@ public class Shadows
         int vlightIndex = directionalShadow.visibleLightIndex;
         var shadowSetting = new ShadowDrawingSettings(_cullingResults, vlightIndex);
         int tileOffset = lightIndex * cascadeCount;
+
+        float cullingFactor = Mathf.Max(0f, 0.8f - _shadowSettings.DirecionalShadowSetting.CascadeFade);
         
         for(int n = 0; n < cascadeCount; n++)
         {
@@ -147,6 +149,8 @@ public class Shadows
                 Vector4 cullingSphere = splitData.cullingSphere;
                 SetCascadeData(n, cullingSphere,tileSize);
             }
+
+            splitData.shadowCascadeBlendCullingFactor = cullingFactor;
             
             shadowSetting.splitData = splitData;
             int tileIndex = tileOffset + n;
