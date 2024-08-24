@@ -66,12 +66,9 @@ public class Lighting
         cmd.SetGlobalVectorArray(dirLightDirId, dirLightDirs);
         cmd.SetGlobalFloat(dirLightCountId, dirLightCount);
     }
-
     
-    
-    private void SetupDirectionalLight(VisibleLight visibleLight, int index)
+    private void SetupDirectionalLight(VisibleLight visibleLight, int visualLightIndex)
     {
-
         if (dirLightCount >= max_dirLight_count)
         {
             return;
@@ -79,7 +76,7 @@ public class Lighting
 
         dirLightColors[dirLightCount] = visibleLight.finalColor;
         dirLightDirs[dirLightCount] = -visibleLight.localToWorldMatrix.GetColumn(2);
-        _shadows.SetupDirectionalShadows(visibleLight.light, index);
+        _shadows.SetupDirectionalShadows(visibleLight.light, visualLightIndex);
         dirLightCount++;
     }
 
