@@ -105,8 +105,6 @@ public class Shadows
         for (int n = 0; n < shadowCount; n++)
         {
             DirectionalShadow directionalShadow = _directionalShadows[n];
-            int vlightIndex = directionalShadow.visibleLightIndex;
-            Light vLight = visibleLights[vlightIndex].light;
             RenderDirectionalShadow(n, tileSize, split, directionalShadow, casacdeCount, ratios);
         }
         _shadowBuffer.SetGlobalVectorArray(shadowCascadeDataId, _cascadeShadowData);
@@ -146,9 +144,11 @@ public class Shadows
             Matrix4x4 projVeiwMatrix = projMatrix*viewMatrix;
             _dirShadowMatrics[tileIndex] = ConvertToAltasMatrix(projVeiwMatrix, offset, split);
             _shadowBuffer.SetViewProjectionMatrices(viewMatrix, projMatrix);
+            _shadowBuffer.SetGlobalDepthBias(0, directionalShadow.slopeScaleBias);
             ExecuteBuffer();
-            
             _context.DrawShadows(ref shadowSetting);
+            _shadowBuffer.SetGlobalDepthBias(0, 0);
+            ExecuteBuffer();
         }
         _directionalShadowData[lightIndex].x = directionalShadow.shadowStrength;
         _directionalShadowData[lightIndex].y = lightIndex;
