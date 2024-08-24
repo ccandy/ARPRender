@@ -46,6 +46,7 @@ public class Shadows
         public int lightIndex;
         public float shadowStrength;
         public float slopeScaleBias;
+        public float nearPlaneOffset;
     }
 
     private DirectionalShadow[] _directionalShadows = new DirectionalShadow[MaxDirectionalShadow];
@@ -101,7 +102,6 @@ public class Shadows
         int casacdeCount = _shadowSettings.DirecionalShadowSetting.CascadeCount;
         Vector3 ratios = _shadowSettings.DirecionalShadowSetting.CasccdeRation;
         
-        NativeArray<VisibleLight> visibleLights = _cullingResults.visibleLights;
         for (int n = 0; n < shadowCount; n++)
         {
             DirectionalShadow directionalShadow = _directionalShadows[n];
@@ -130,7 +130,7 @@ public class Shadows
         {
             _cullingResults.ComputeDirectionalShadowMatricesAndCullingPrimitives(vlightIndex, n,
                 cascadeCount, ratio, tileSize,
-                0f, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
+                directionalShadow.nearPlaneOffset, out Matrix4x4 viewMatrix, out Matrix4x4 projMatrix, out ShadowSplitData splitData);
             
             if (lightIndex == 0)
             {
@@ -171,6 +171,7 @@ public class Shadows
         directionalShadow.visibleLightIndex = visualLightIndex;
         directionalShadow.slopeScaleBias = light.shadowBias;
         directionalShadow.shadowStrength = light.shadowStrength;
+        directionalShadow.nearPlaneOffset = light.shadowNearPlane;
         
         _directionalShadows[_directionalShadowCount++] = directionalShadow;
     }
@@ -233,7 +234,7 @@ public class Shadows
         float texelSize = 2f * cullingSphere.w / tilesize;
         cullingSphere.w *= cullingSphere.w;
         _cascadeShadowData[index].x = 1 / cullingSphere.w;
-        _cascadeShadowData[index].y = texelSize * sqrt2;
+        _cascadeShadowData[index].y = texelSize * sqrt2; //normalBias
         _cascadeCullingSpheres[index] = cullingSphere;
     }
 }
