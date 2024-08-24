@@ -5,7 +5,8 @@ using UnityEngine.Rendering;
 public class Shadows
 {
     private const string bufferName = "Shadow Buffer";
-
+    private const float sqrt2 = 1.4142136f;
+    
     private const int
         MaxDirectionalShadow = 4,
         MaxCasacde = 4;
@@ -130,9 +131,6 @@ public class Shadows
             
             if (lightIndex == 0)
             {
-                /*Vector4 cullingSphere = splitData.cullingSphere;
-                cullingSphere.w *= cullingSphere.w;
-                _cascadeCullingSpheres[n] = cullingSphere;*/
                 Vector4 cullingSphere = splitData.cullingSphere;
                 SetCascadeData(n, cullingSphere,tileSize);
             }
@@ -221,12 +219,13 @@ public class Shadows
         return m;
         
     }
-
-
-    private void SetCascadeData(int index, Vector4 cullingSphere, int tileIndex)
+    
+    private void SetCascadeData(int index, Vector4 cullingSphere, int tilesize)
     {
-        _cascadeShadowData[index].x = 1 / cullingSphere.w;
+        float texelSize = 2f * cullingSphere.w / tilesize;
         cullingSphere.w *= cullingSphere.w;
+        _cascadeShadowData[index].x = 1 / cullingSphere.w;
+        _cascadeShadowData[index].y = texelSize * sqrt2;
         _cascadeCullingSpheres[index] = cullingSphere;
     }
 }

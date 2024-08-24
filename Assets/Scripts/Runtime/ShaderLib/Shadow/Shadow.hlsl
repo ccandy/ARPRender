@@ -79,14 +79,20 @@ float SampleDirectionlShadowAltas(float3 shadowPos)
     return SAMPLE_TEXTURE2D_SHADOW(_DirectionalShadowAtlas,sampler_DirectionalShadowAtlas, shadowPos);
 }
 
-float GetDirectionalAtten(Surface surface, DirectionalShadowData data)
+float GetDirectionalAtten(Surface surface, DirectionalShadowData data, ShadowData shadowdata)
 {
     float shadowStrength = data.strength;
+    if(shadowStrength <= 0)
+    {
+        return 1.0;
+    }
+    
     float3 posWS = surface.positionWS;
     int tileIndex = data.tileIndex;
    
     float4x4 worldToShadowMatrix = _DirectonalShadowMatrics[tileIndex];
-    float3 shadowPos = mul(worldToShadowMatrix,float4(posWS,1));
+    float3 normalBis = surface.normal * _ShadowCascadeData[shadowdata.cascadeIndex].y;
+    float3 shadowPos = mul(worldToShadowMatrix,float4(posWS + normalBis,1));
 
     float shadowAtten = SampleDirectionlShadowAltas(shadowPos);
     shadowAtten = lerp(1.0, shadowAtten, shadowStrength);
