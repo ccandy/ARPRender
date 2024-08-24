@@ -35,6 +35,7 @@ Shader "ARP/Lit"
             #pragma shader_feature ARP_SHADERBATCH_ON
             #pragma shader_feature ARP_CLIPING
             #pragma shader_feature ARP_PREMULTIPLY_ALPHA
+            #pragma multi_compile _ ARP_DIRECTIONAL_PCF3 ARP_DIRECTIONAL_PCF5 ARP_DIRECTIONAL_PCF7
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFrag
             

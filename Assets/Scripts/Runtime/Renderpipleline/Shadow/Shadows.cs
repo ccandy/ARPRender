@@ -7,6 +7,13 @@ public class Shadows
 {
     private const string bufferName = "Shadow Buffer";
     private const float sqrt2 = 1.4142136f;
+
+    private string[] DirectionalFilterKeywords =
+    {
+        "ARP_DIRECTIONAL_PCF3",
+        "ARP_DIRECTIONAL_PCF5",
+        "ARP_DIRECTIONAL_PCF7"
+    };
     
     private const int
         MaxDirectionalShadow = 4,
@@ -21,7 +28,8 @@ public class Shadows
         cascadeSphereCullingSphereId = Shader.PropertyToID("_CascadeSphereCullingSphere"),
         shadowDistanceId = Shader.PropertyToID("_ShadowDistance"),
         shadowDistanceFadeId = Shader.PropertyToID("_ShadowDistanceFade"),
-        shadowCascadeDataId = Shader.PropertyToID("_ShadowCascadeData");
+        shadowCascadeDataId = Shader.PropertyToID("_ShadowCascadeData"),
+        shadowAltasId = Shader.PropertyToID("_ShadowAltasSize");
     
     //Shadow Data
     private Matrix4x4[] _dirShadowMatrics = new Matrix4x4[MaxDirectionalShadow * MaxCasacde];
@@ -113,9 +121,11 @@ public class Shadows
         _shadowBuffer.SetGlobalVectorArray(dirShadowDataId, _directionalShadowData);
         _shadowBuffer.SetGlobalVectorArray(cascadeSphereCullingSphereId, _cascadeCullingSpheres);
         _shadowBuffer.SetGlobalFloat(shadowDistanceId, _shadowSettings.MaxShadowDistance);
-        float f = 1f - _shadowSettings.DirecionalShadowSetting.cascadeFade;
+        float f = 1f - _shadowSettings.DirecionalShadowSetting.CascadeFade;
         _shadowBuffer.SetGlobalVector(shadowDistanceFadeId, new Vector4(1/_shadowSettings.MaxShadowDistance, 
             1/_shadowSettings.DistanceFade,1f / (1f - f * f)));
+        SetKeywords();
+        _shadowBuffer.SetGlobalVector(shadowAltasId, new Vector4(altasSize, 1f/altasSize));
         _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
     }
@@ -232,9 +242,28 @@ public class Shadows
     private void SetCascadeData(int index, Vector4 cullingSphere, int tilesize)
     {
         float texelSize = 2f * cullingSphere.w / tilesize;
+        float filterSize = texelSize * ((float)_shadowSettings.DirecionalShadowSetting.ShadowFilterMode + 1);
         cullingSphere.w *= cullingSphere.w;
         _cascadeShadowData[index].x = 1 / cullingSphere.w;
-        _cascadeShadowData[index].y = texelSize * sqrt2; //normalBias
+        _cascadeShadowData[index].y = filterSize * sqrt2; //normalBias
         _cascadeCullingSpheres[index] = cullingSphere;
+    }
+
+    private void SetKeywords()
+    {
+        int enabledIndex = (int)_shadowSettings.DirecionalShadowSetting.ShadowFilterMode - 1;
+        for (int n = 0; n < DirectionalFilterKeywords.Length; n++)
+        {
+            string keyword = DirectionalFilterKeywords[n];
+            if (enabledIndex == n)
+            {
+                _shadowBuffer.EnableShaderKeyword(keyword);
+            }
+            else
+            {
+                _shadowBuffer.DisableShaderKeyword(keyword);
+            }
+        }
+        ExecuteBuffer();
     }
 }
