@@ -27,6 +27,13 @@ VertexShadowOutput ShadowCasterPassVertex(VertexShadowInput input)
     VertexShadowOutput output;
 
     output.positionCS = TransformObjectToHClip(input.positionOS);
+
+    //ShadowPancking
+#if UNITY_REVERSED_Z
+    output.positionCS.z = min(output.positionCS.z, output.positionCS.w * UNITY_NEAR_CLIP_VALUE);
+#else
+    output.positionCS.z = max(output.positionCS.z, output.positionCS.w * UNITY_NEAR_CLIP_VALUE);
+#endif
     output.uv = TRANSFORM_TEX(input.uv, _MainTex);
 
     return output;
