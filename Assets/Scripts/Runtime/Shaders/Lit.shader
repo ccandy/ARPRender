@@ -9,6 +9,8 @@ Shader "ARP/Lit"
         _Roughness("Roughness", Range(0,1)) = 0.5
         _Metallic("Metallic", Range(0,1)) = 0.5
         
+        [Toggle(ARP_CLIPING)]ARP_CLIPING ("CLIPing", Float) = 1
+        
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("SrC Blend", float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Dst Blend", float) = 0
         [Enum(Off,0,On,1)] _ZWrite("Z Write", Float) = 1
