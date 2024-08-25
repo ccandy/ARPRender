@@ -6,10 +6,6 @@
 TEXTURE2D(_MainTex);
 SAMPLER(sampler_MainTex);
 
-float _CutOff;
-float4 _Color;
-float4 _MainTex_ST;
-
 struct VertexShadowInput
 {
     float3 positionOS: POSITION;
