@@ -1,0 +1,8 @@
+#ifndef ARP_GI_INCLUDE
+#define ARP_GI_INCLUDE
+
+#define MAX_SHADOWED_DIRECTIONAL_COUNT 4
+
+
+
+#endif
