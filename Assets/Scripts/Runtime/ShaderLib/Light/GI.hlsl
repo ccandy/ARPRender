@@ -7,14 +7,12 @@ TEXTURE2D(unity_Lightmap);
 SAMPLER(samplerunity_Lightmap);
 
 #if defined(LIGHTMAP_ON)
-
     #define GI_VERTEXINPUT_DATA float2 lightMapUV:TEXCOORD1;
-    #define GI_VERTEXOUTPUT_DATA float lightMapUV: VAR_LIGHT_MAP_UV;
+    #define GI_VERTEXOUTPUT_DATA float2 lightMapUV: VAR_LIGHT_MAP_UV;
     #define TRANSFORM_GI_DATA(input,output) \
         output.lightMapUV = input.lightMapUV * \
         unity_LightmapST.xy + unity_LightmapST.zw
     #define GI_FRAG_DATA(input) input.lightMapUV
-
 #else
     #define GI_VERTEXINPUT_DATA 
     #define GI_VERTEXOUTPUT_DATA 
