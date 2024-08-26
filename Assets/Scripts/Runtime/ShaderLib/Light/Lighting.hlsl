@@ -31,7 +31,7 @@ float3 DirectBRDF(Surface surface, BRDF brdf, Light light)
     return SpecularStrength(surface, brdf, light);
 }
 
-float3 GetLighting(Surface surface, BRDF brdf)
+float3 GetLighting(Surface surface, BRDF brdf,GI gi)
 {
     
     float3 lightCol = 0;

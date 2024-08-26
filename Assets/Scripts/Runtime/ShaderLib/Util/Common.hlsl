@@ -25,6 +25,7 @@
 #include "Assets/Scripts/Runtime/ShaderLib/PBR/BRDF.hlsl"
 #include "Assets/Scripts/Runtime/ShaderLib/Shadow//Shadow.hlsl"
 #include "Assets/Scripts/Runtime/ShaderLib/Light/Light.hlsl"
+#include "Assets/Scripts/Runtime/ShaderLib/Light/GI.hlsl"
 #include "Assets/Scripts/Runtime/ShaderLib/Light/Lighting.hlsl"
 
 

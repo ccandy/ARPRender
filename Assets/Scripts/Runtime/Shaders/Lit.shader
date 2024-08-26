@@ -32,7 +32,7 @@ Shader "ARP/Lit"
             
             HLSLPROGRAM
             #include "Assets/Scripts/Runtime/ShaderLib/LitPass.hlsl"
-            #pragma multi_compile_instancing
+            #pragma multi_compile _ LIGHTMAP_ON
             #pragma shader_feature ARP_GPUINSTANCE_ON
             #pragma shader_feature ARP_SHADERBATCH_ON
             #pragma shader_feature ARP_CLIPING

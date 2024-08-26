@@ -1,6 +1,11 @@
 #ifndef ARP_GI_INCLUDE
 #define ARP_GI_INCLUDE
 
+TEXTURE2D(unity_Lightmap);
+SAMPLER(samplerunity_Lightmap);
+
+
+
 struct GI
 {
     float3 diffuse;
