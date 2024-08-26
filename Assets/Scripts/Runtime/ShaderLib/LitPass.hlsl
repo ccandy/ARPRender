@@ -11,7 +11,6 @@ struct VertexInput
     float3 positionOS: POSITION;
     float2 uv: TEXCOORD0;
     float3 normal:NORMAL;
-    float2 uv2:TEXCOORD1;
     GI_VERTEXINPUT_DATA
     
 };

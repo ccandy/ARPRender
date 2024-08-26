@@ -10,7 +10,7 @@ SAMPLER(samplerunity_Lightmap);
 
     #define GI_VERTEXINPUT_DATA float2 lightMapUV:TEXCOORD1;
     #define GI_VERTEXOUTPUT_DATA float lightMapUV: VAR_LIGHT_MAP_UV;
-    #defineTRANSFORM_GI_DATA(input,output) \
+    #define TRANSFORM_GI_DATA(input,output) \
         output.lightMapUV = input.lightMapUV * \
         unity_LightmapST.xy + unity_LightmapST.zw
     #define GI_FRAG_DATA(input) input.lightMapUV
@@ -53,7 +53,7 @@ struct GI
 GI GetGI(float2 lightMapUV)
 {
     GI gi;
-    gi.diffuse = float3(lightMapUV, 0.0);
+    gi.diffuse = SampleLightmap(lightMapUV);
 
     return gi;
 }
