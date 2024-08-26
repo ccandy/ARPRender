@@ -41,7 +41,7 @@ float3 GetLighting(Surface surface, BRDF brdf,GI gi)
         ShadowData shadowdata = GetShadowData(surface);
         DirectionalShadowData dirshadowData = GetDirectionalShadowData(n,shadowdata);
         float ShadowAtten = GetDirectionalAtten(surface, dirshadowData, shadowdata);
-        lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light) * ShadowAtten;
+        lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light) * ShadowAtten * gi.diffuse;
     }
 
     return lightCol;
