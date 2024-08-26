@@ -17,5 +17,12 @@ float4x4 glstate_matrix_projection;
 
 float3 _WorldSpaceCameraPos;
 
+CBUFFER_START(UnityPerMaterial)
+    float4 _Color;
+    float _CutOff;
+    float _Roughness;
+    float _Metallic;
+    float4 _MainTex_ST;
+CBUFFER_END
 
 #endif

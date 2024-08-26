@@ -24,20 +24,6 @@ struct VertexOutput
     #endif 
 };
 
-#if defined(ARP_GPUINSTANCE_ON)
-    UNITY_INSTANCING_BUFFER_START(UnityPerMaterial)
-        UNITY_DEFINE_INSTANCED_PROP(float4, _Color)
-        UNITY_DEFINE_INSTANCED_PROP(float4, _MainTex_ST)
-        UNITY_DEFINE_INSTANCED_PROP(float, _CutOff)
-    UNITY_INSTANCING_BUFFER_END(UnityPerMaterial)
-#else
-    CBUFFER_START(UnityPerMaterial)
-        float4 _Color;
-        float _CutOff;
-    CBUFFER_END
-    float4 _MainTex_ST;
-#endif
-
 VertexOutput UnlitPassVertex(VertexInput input)
 {
     VertexOutput output;

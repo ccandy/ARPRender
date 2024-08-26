@@ -41,7 +41,6 @@ Shader "ARP/Lit"
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFrag
             
-            
             ENDHLSL
         }
 

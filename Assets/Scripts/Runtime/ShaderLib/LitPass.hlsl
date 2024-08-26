@@ -21,13 +21,6 @@ struct VertexOutput
     float3 normalWS:VAR_NORMAL;
 };
 
-CBUFFER_START(UnityPerMaterial)
-    float4 _Color;
-    float _CutOff;
-    float _Roughness;
-    float _Metallic;
-CBUFFER_END
-    float4 _MainTex_ST;
 VertexOutput LitPassVertex(VertexInput input)
 {
     VertexOutput output;
