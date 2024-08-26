@@ -49,7 +49,7 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     Surface surface = GetSurface(col, input.normalWS, input.positionWS, _Roughness, _Metallic);
     
     BRDF brdf = GetBRDF(surface);
-    GI gi = GetGI(GI_FRAG_DATA(input));
+    GI gi = GetGI(GI_FRAG_DATA(input), surface);
     float3 lightColor = GetLighting(surface, brdf, gi);
 
     float3 finalCol = lightColor * brdf.diffuse;

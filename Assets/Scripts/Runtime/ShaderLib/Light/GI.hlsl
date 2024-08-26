@@ -41,6 +41,23 @@ float3 SampleLightmap(float2 lightmapUV)
     #endif
 }
 
+float3 SampleLightProbe(Surface surface)
+{
+    #if defined(LIGHTMAP_ON)
+        return 0.0;
+    #else
+        float4 coff[7];
+        coff[0] = unity_SHAr;
+        coff[1] = unity_SHAg;
+        coff[2] = unity_SHAb;
+        coff[3] = unity_SHBr;
+        coff[4] = unity_SHBg;
+        coff[5] = unity_SHBb;
+        coff[6] = unity_SHC;
+        return max(0.0, SampleSH9(coff, surface.normal));
+    #endif
+}
+
 
 struct GI
 {
@@ -48,10 +65,10 @@ struct GI
 };
 
 
-GI GetGI(float2 lightMapUV)
+GI GetGI(float2 lightMapUV, Surface surface)
 {
     GI gi;
-    gi.diffuse = SampleLightmap(lightMapUV);
+    gi.diffuse = SampleLightmap(lightMapUV) + SampleLightProbe(surface);
 
     return gi;
 }
