@@ -21,13 +21,16 @@ public class Lighting
     private static int
         additionalLightCountId = Shader.PropertyToID("_additionalLightCount"),
         additionalLightColorsId = Shader.PropertyToID("_additionalLightColors"),
-        additionalLightPosId = Shader.PropertyToID("additionalLightPos");
+        additionalLightPosId = Shader.PropertyToID("additionalLightPos"),
+        additionalSpotDirId = Shader.PropertyToID("_additionalSpotDir"),
+        additionalSpotAnglesId = Shader.PropertyToID("_additionalSpotAngles");
     private const int max_additionallight_count = 64;
     private int additonalLightCount = 0;
     private static Vector4[]
         additionalLightColors = new Vector4[max_additionallight_count],
-        additionalPositions = new Vector4[max_additionallight_count];
-    
+        additionalPositions = new Vector4[max_additionallight_count],
+        additionalSpotDir = new Vector4[max_additionallight_count],
+        additionalSpotAngles = new Vector4[max_additionallight_count];
     //buffers
     private const string bufferName = "CustomLight";
     private Shadows _shadows;
@@ -89,20 +92,36 @@ public class Lighting
         }
 
         additionalLightColors[additonalLightCount] = visibleLight.finalColor;
+        Vector4 pos = visibleLight.localToWorldMatrix.GetColumn(3);
+        pos.w = 1 / Mathf.Max(visibleLight.range * visibleLight.range, 0.00001f);
+        additionalPositions[additonalLightCount] = pos;
+        
         if (visibleLight.lightType == LightType.Point)
         {
             SetupPointLight(additonalLightCount, ref visibleLight);
+        }
+        else
+        {
+            SetupSpotLight(additonalLightCount, ref visibleLight);
         }
         
         additonalLightCount++;
     }
 
     private void SetupPointLight(int index, ref VisibleLight visibleLight)
+    { 
+        additionalSpotAngles[index] = new Vector4(0, 1);
+    }
+
+    private void SetupSpotLight(int index, ref VisibleLight visibleLight)
     {
+        additionalSpotDir[index] = -visibleLight.localToWorldMatrix.GetColumn(2);
+        Light light = visibleLight.light;
+        float innerCos = Mathf.Cos(Mathf.Deg2Rad * 0.5f * light.innerSpotAngle);
+        float outerCos = Mathf.Cos(Mathf.Deg2Rad * 0.5f * light.spotAngle);
+        float angleRangeInv = 1 / Mathf.Max(innerCos - outerCos, 0.001f); 
+        additionalSpotAngles[index] = new Vector4(angleRangeInv, -outerCos * angleRangeInv);
         
-        Vector4 pos = visibleLight.localToWorldMatrix.GetColumn(3);
-        pos.w = 1 / Mathf.Max(visibleLight.range * visibleLight.range, 0.00001f);
-        additionalPositions[index] = pos;
     }
     
     private void SetupDirectionalLight(VisibleLight visibleLight, int visualLightIndex)
@@ -132,6 +151,8 @@ public class Lighting
         {
             additionalPositions[n] = Vector4.zero;
             additionalLightColors[n] = Vector4.zero;
+            additionalSpotDir[n] = Vector4.zero;
+            additionalSpotAngles[n] = Vector4.zero;
         }
         
         _shadows.CleanUp();
@@ -153,6 +174,8 @@ public class Lighting
         {
             cmd.SetGlobalVectorArray(additionalLightColorsId, additionalLightColors);
             cmd.SetGlobalVectorArray(additionalLightPosId, additionalPositions);
+            cmd.SetGlobalVectorArray(additionalSpotDirId, additionalSpotDir);
+            cmd.SetGlobalVectorArray(additionalSpotAnglesId, additionalSpotAngles);
         }
         cmd.SetGlobalInt(additionalLightCountId, additonalLightCount);
     }
