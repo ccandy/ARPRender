@@ -99,7 +99,10 @@ public class Lighting
 
     private void SetupPointLight(int index, ref VisibleLight visibleLight)
     {
-        additionalPositions[index] = visibleLight.localToWorldMatrix.GetColumn(3);
+        
+        Vector4 pos = visibleLight.localToWorldMatrix.GetColumn(3);
+        pos.w = 1 / Mathf.Max(visibleLight.range * visibleLight.range, 0.00001f);
+        additionalPositions[index] = pos;
     }
     
     private void SetupDirectionalLight(VisibleLight visibleLight, int visualLightIndex)
@@ -123,6 +126,13 @@ public class Lighting
             dirLightColors[n] = Vector4.zero;
             dirLightDirs[n] = Vector4.zero;
         }
+
+        additonalLightCount = 0;
+        for (int n = 0; n < max_additionallight_count; n++)
+        {
+            additionalPositions[n] = Vector4.zero;
+            additionalLightColors[n] = Vector4.zero;
+        }
         
         _shadows.CleanUp();
     }
@@ -133,18 +143,18 @@ public class Lighting
         {
             cmd.SetGlobalVectorArray(dirLightColorId, dirLightColors);
             cmd.SetGlobalVectorArray(dirLightDirId, dirLightDirs);
-            cmd.SetGlobalFloat(dirLightCountId, dirLightCount);
         }
+        cmd.SetGlobalInt(dirLightCountId, dirLightCount);
     }
 
     private void SetAdditionalLightToGPU()
     {
         if (additonalLightCount > 0)
         {
-            cmd.SetGlobalFloat(additionalLightCountId, additonalLightCount);
             cmd.SetGlobalVectorArray(additionalLightColorsId, additionalLightColors);
             cmd.SetGlobalVectorArray(additionalLightPosId, additionalPositions);
         }
+        cmd.SetGlobalInt(additionalLightCountId, additonalLightCount);
     }
     
 }
