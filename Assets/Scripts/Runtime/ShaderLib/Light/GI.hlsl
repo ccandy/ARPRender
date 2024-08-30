@@ -54,7 +54,6 @@ float3 SampleLightProbe(Surface surface)
         coff[4] = unity_SHBg;
         coff[5] = unity_SHBb;
         coff[6] = unity_SHC;
-        //return 0;
        return max(0.0, SampleSH9(coff, surface.normal));
     #endif
 }
