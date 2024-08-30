@@ -28,19 +28,19 @@ float SpecularStrength(Surface surface, BRDF brdf, Light light)
 
 float3 DirectBRDF(Surface surface, BRDF brdf, Light light)
 {
-    return SpecularStrength(surface, brdf, light);
+    return SpecularStrength(surface, brdf, light) * brdf.specular + brdf.diffuse;
 }
 
 float3 GetLighting(Surface surface, BRDF brdf,GI gi)
 {
-    float3 lightCol = 0;
+    float3 lightCol = brdf.diffuse * gi.diffuse;
     for(int n = 0; n < _direcionalLightCount; n++)
     {
         Light light = GetDirectionLight(n);
         ShadowData shadowdata = GetShadowData(surface);
         DirectionalShadowData dirshadowData = GetDirectionalShadowData(n,shadowdata);
         float ShadowAtten = GetDirectionalAtten(surface, dirshadowData, shadowdata);
-        lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light) * ShadowAtten * gi.diffuse;
+        lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light) * ShadowAtten;
     }
 
     int additonalLightCount = GetAdditionalLightCount();

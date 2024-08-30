@@ -54,7 +54,8 @@ float3 SampleLightProbe(Surface surface)
         coff[4] = unity_SHBg;
         coff[5] = unity_SHBb;
         coff[6] = unity_SHC;
-        return max(0.0, SampleSH9(coff, surface.normal));
+        //return 0;
+       return max(0.0, SampleSH9(coff, surface.normal));
     #endif
 }
 
@@ -69,7 +70,6 @@ GI GetGI(float2 lightMapUV, Surface surface)
 {
     GI gi;
     gi.diffuse = SampleLightmap(lightMapUV) + SampleLightProbe(surface);
-
     return gi;
 }
 
