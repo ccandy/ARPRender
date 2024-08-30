@@ -23,15 +23,19 @@ struct Light
     float3 color;
     float3 lightDir;
     float atten;
+    float shadowAtten;
 };
 
-Light GetDirectionLight(int index)
+Light GetDirectionLight(int index, Surface surface)
 {
     Light light;
-    light.color     = _directionalLightColors[index];
-    light.lightDir  = _directionalLightDirs[index];
-    light.atten     = 1;
-    
+    light.color         = _directionalLightColors[index];
+    light.lightDir      = _directionalLightDirs[index];
+    light.atten         = 1;
+    ShadowData shadowdata = GetShadowData(surface);
+    DirectionalShadowData dirshadowData = GetDirectionalShadowData(index,shadowdata);
+    float shadowAtten = GetDirectionalAtten(surface, dirshadowData, shadowdata);
+    light.shadowAtten   = shadowAtten;
     return light;
 }
 
@@ -65,6 +69,7 @@ Light GetAdditionalLight(int index, Surface surface)
     float4 spotLightAngle = _additionalSpotAngles[index];
     //light.atten = GetSpotAtten(spotLightDir, light.lightDir, spotLightAngle.xy) * GetRangeAtten(distanceSqr,range);
     light.atten = GetSpotAtten(spotLightDir, light.lightDir, spotLightAngle.xy) * GetRangeAtten(distanceSqr,range);
+    light.shadowAtten = 1;
     return light;
 }
 
