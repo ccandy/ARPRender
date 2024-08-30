@@ -3,9 +3,6 @@
 
 #include "Assets/Scripts/Runtime/ShaderLib/Util/Common.hlsl"
 
-TEXTURE2D(_MainTex);
-SAMPLER(sampler_MainTex);
-
 struct VertexShadowInput
 {
     float3 positionOS: POSITION;
