@@ -67,7 +67,6 @@ Light GetAdditionalLight(int index, Surface surface)
     float range = additionalLightPos[index].w;
     float3 spotLightDir = _additionalSpotDir[index];
     float4 spotLightAngle = _additionalSpotAngles[index];
-    //light.atten = GetSpotAtten(spotLightDir, light.lightDir, spotLightAngle.xy) * GetRangeAtten(distanceSqr,range);
     light.atten = GetSpotAtten(spotLightDir, light.lightDir, spotLightAngle.xy) * GetRangeAtten(distanceSqr,range);
     light.shadowAtten = 1;
     return light;

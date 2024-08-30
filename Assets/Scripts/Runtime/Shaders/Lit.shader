@@ -10,6 +10,7 @@ Shader "ARP/Lit"
         _Metallic("Metallic", Range(0,1)) = 0.5
         
         [Toggle(ARP_CLIPING)]ARP_CLIPING ("CLIPing", Float) = 1
+        [Toggle(ARP_STATIC)]ARP_STATIC ("STATIC", Float) = 0
         
         [Enum(UnityEngine.Rendering.BlendMode)] _SrcBlend("SrC Blend", float) = 1
         [Enum(UnityEngine.Rendering.BlendMode)] _DstBlend("Dst Blend", float) = 0
@@ -24,7 +25,11 @@ Shader "ARP/Lit"
             "LightMode" = "CustomLit"
         }
         LOD 100
-
+        
+        HLSLINCLUDE
+        #include "Assets/Scripts/Runtime/ShaderLib/Util/Common.hlsl"
+        #include "Assets/Scripts/Runtime/ShaderLib/Light/LitInput.hlsl"
+        ENDHLSL
         Pass
         {
             Blend [_SrcBlend][_DstBlend]
@@ -37,6 +42,7 @@ Shader "ARP/Lit"
             #pragma shader_feature ARP_SHADERBATCH_ON
             #pragma shader_feature ARP_CLIPING
             #pragma shader_feature ARP_PREMULTIPLY_ALPHA
+            #pragma shader_feature ARP_STATIC
             #pragma multi_compile _ ARP_DIRECTIONAL_PCF3 ARP_DIRECTIONAL_PCF5 ARP_DIRECTIONAL_PCF7
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFrag
@@ -58,6 +64,25 @@ Shader "ARP/Lit"
             #pragma shader_feature ARP_CLIPING
             #pragma vertex ShadowCasterPassVertex
             #pragma fragment ShadowCasterPassFragement
+            
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "META"
+            Tags {
+				"LightMode" = "Meta"
+			}
+            
+            Cull Off
+            
+            HLSLPROGRAM
+            #pragma target 3.5
+            
+            #include "Assets/Scripts/Runtime/ShaderLib/Light/MetaPass.hlsl"
+            #pragma vertex MetaPassVertex
+            #pragma fragment MetaPassFrag
             
             ENDHLSL
         }

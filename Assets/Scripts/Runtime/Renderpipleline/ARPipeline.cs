@@ -11,9 +11,10 @@ public class ARPipeline : RenderPipeline
     public ARPipeline(ARPAsset asset)
     {
         _asset = asset;
+        GraphicsSettings.useScriptableRenderPipelineBatching = _asset.EnableShaderBatch;
         if (_asset.EnableShaderBatch)
         {
-            GraphicsSettings.useScriptableRenderPipelineBatching = true;
+            
             Shader.EnableKeyword("ARP_SHADERBATCH_ON");
             //_asset.EnableGPUInstance = false;
             Shader.DisableKeyword("ARP_GPUINSTANCE_ON");

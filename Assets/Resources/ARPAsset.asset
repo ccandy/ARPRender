@@ -12,6 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9803b62be9c14cb4b951bffcc4d7a366, type: 3}
   m_Name: ARPAsset
   m_EditorClassIdentifier: 
-  EnableShaderBatch: 1
-  EnableGPUInstance: 0
+  EnableShaderBatch: 0
   EnableDynamicBathc: 0
+  ShadowSettings:
+    MaxShadowDistance: 30
+    DistanceFade: 0.874
+    DirecionalShadowSetting:
+      AltasSize: 1024
+      CascadeCount: 4
+      CasccdeRation1: 0.1
+      CasccdeRation2: 0.25
+      CasccdeRation3: 0.5
+      CascadeFade: 0.1
+      ShadowFilterMode: 0

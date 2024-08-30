@@ -1,11 +1,6 @@
 #ifndef ARP_LIT_PASS_INCLUDE
 #define ARP_LIT_PASS_INCLUDE
 
-#include "Assets/Scripts/Runtime/ShaderLib/Util/Common.hlsl"
-
-TEXTURE2D(_MainTex);
-SAMPLER(sampler_MainTex); 
-
 struct VertexInput
 {
     float3 positionOS: POSITION;
@@ -51,9 +46,7 @@ half4 LitPassFrag(VertexOutput input) : SV_TARGET
     BRDF brdf = GetBRDF(surface);
     GI gi = GetGI(GI_FRAG_DATA(input), surface);
     float3 lightColor = GetLighting(surface, brdf, gi);
-
-    float3 finalCol = lightColor * brdf.diffuse;
-    
+    float3 finalCol = lightColor;
     return float4(finalCol, surface.alpha);
 }
 

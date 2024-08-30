@@ -34,20 +34,21 @@ float3 DirectBRDF(Surface surface, BRDF brdf, Light light)
 float3 GetLighting(Surface surface, BRDF brdf,GI gi)
 {
     float3 lightCol = brdf.diffuse * gi.diffuse;
-    for(int n = 0; n < _direcionalLightCount; n++)
-    {
-        Light light = GetDirectionLight(n,surface);
-        lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light);
-    }
+    #if !defined(ARP_STATIC)
+        for(int n = 0; n < _direcionalLightCount; n++)
+        {
+            Light light = GetDirectionLight(n,surface);
+            lightCol += GetIncomingLight(surface, light) * DirectBRDF(surface, brdf, light);
+        }
 
-    int additonalLightCount = GetAdditionalLightCount();
-    
-    for(int n = 0; n < additonalLightCount; n++)
-    {
-        Light light = GetAdditionalLight(n, surface);
-        lightCol += GetIncomingLight(surface, light);
-    }
-
+        int additonalLightCount = GetAdditionalLightCount();
+        
+        for(int n = 0; n < additonalLightCount; n++)
+        {
+            Light light = GetAdditionalLight(n, surface);
+            lightCol += GetIncomingLight(surface, light);
+        }
+    #endif
     return lightCol;
 }
 
