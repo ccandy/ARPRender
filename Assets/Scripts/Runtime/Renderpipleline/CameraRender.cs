@@ -73,7 +73,7 @@ public partial class CameraRender
         {
             enableInstancing = useGPUInstance,
             enableDynamicBatching = useDynamicBatch,
-            perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe
+            perObjectData = PerObjectData.Lightmaps | PerObjectData.LightProbe | PerObjectData.ShadowMask
         };
         drawingSetting.SetShaderPassName(1,litShaderTagId);
         var filteringSetting = new FilteringSettings(RenderQueueRange.opaque);
