@@ -67,6 +67,13 @@ public class Lighting
         {
             VisibleLight visibleLight = visibleLights[n];
 
+            LightBakingOutput lightBakingOutput = visibleLight.light.bakingOutput;
+            if (lightBakingOutput.lightmapBakeType == LightmapBakeType.Mixed
+                && lightBakingOutput.mixedLightingMode == MixedLightingMode.Shadowmask)
+            {
+                _shadows.UseShadowMask = true;
+            }
+            
             if (visibleLight.lightType == LightType.Directional)
             {
                 SetupDirectionalLight(visibleLight, n);
