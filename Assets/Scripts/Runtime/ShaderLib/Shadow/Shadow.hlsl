@@ -29,10 +29,17 @@ CBUFFER_START(_CustomShadows)
     float4 _ShadowDistanceFade;
 CBUFFER_END
 
+struct ShadowMask
+{
+    bool distance;
+    float4 shadows;
+};
+
 struct ShadowData
 {
     int cascadeIndex;
     float shadowStrength;
+    ShadowMask shadowMask;
 };
 
 
@@ -44,6 +51,9 @@ float FadeShadowStrength(float distance, float scale, float fade)
 ShadowData GetShadowData(Surface surface)
 {
     ShadowData data;
+    data.shadowMask.distance = false;
+    data.shadowMask.shadows = 1;
+    
     data.shadowStrength = FadeShadowStrength(surface.depth, _ShadowDistanceFade.x, _ShadowDistanceFade.y);
     int i;
     for(i = 0; i <_CascadeCount; i++)
@@ -133,5 +143,8 @@ float GetDirectionalAtten(Surface surface, DirectionalShadowData data, ShadowDat
     
     return shadowAtten;
 }
+
+
+
 
 #endif
