@@ -60,15 +60,57 @@ public class Shadows
     private DirectionalShadow[] _directionalShadows = new DirectionalShadow[MaxDirectionalShadow];
     private Vector4[] _directionalShadowData = new Vector4[MaxDirectionalShadow];
 
+    //Shadow Mask
+
+    private static string[] ShadowMaskKeywords =
+    {
+        "ARP_SHADOW_MASK_DISTANCE",
+        "ARP_SHADOW_MASK"
+    };
+
+    private bool _useShadowMask;
+
+    public bool UseShadowMask
+    {
+        set
+        {
+            _useShadowMask = value;
+        }
+        get
+        {
+            return _useShadowMask;
+        }
+    }
+    
     public void Setup(ScriptableRenderContext context, CullingResults cullingResults, ShadowSettings shadowSettings)
     {
         _context = context;
         _cullingResults = cullingResults;
         _shadowSettings = shadowSettings;
         _directionalShadowCount = 0;
+        _useShadowMask = false;
     }
 
     public void Render()
+    {
+        RenderRealTimeShadow();
+        RenderStaticShadow();
+    }
+
+    private void RenderStaticShadow()
+    {
+       BeginSample("Shadow Mask");
+
+       if (_useShadowMask)
+       {
+           _shadowBuffer.EnableShaderKeyword(ShadowMaskKeywords[0]);
+           ExecuteBuffer();
+       }
+       
+       EndSample("Shadow Mask");
+    }
+    
+    private void RenderRealTimeShadow()
     {
         if (_directionalShadowCount > 0)
         {
@@ -79,7 +121,7 @@ public class Shadows
             _shadowBuffer.GetTemporaryRT(dirShadowAtlasId, 1,1, 24,FilterMode.Bilinear,RenderTextureFormat.Shadowmap);
         }
     }
-
+    
     private RenderTextureFormat GetFormatForShadowMap()
     {
         if (SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Shadowmap))
@@ -268,6 +310,19 @@ public class Shadows
                 _shadowBuffer.DisableShaderKeyword(keyword);
             }
         }
+        ExecuteBuffer();
+    }
+
+
+    private void BeginSample(string buffername)
+    {
+        _shadowBuffer.BeginSample(buffername);
+        ExecuteBuffer();
+    }
+
+    private void EndSample(string buffername)
+    {
+        _shadowBuffer.EndSample(bufferName);
         ExecuteBuffer();
     }
 }

@@ -19,11 +19,6 @@ Shader "ARP/Lit"
     }
     SubShader
     {
-        Tags 
-        { 
-            "RenderType"="Opaque" 
-            "LightMode" = "CustomLit"
-        }
         LOD 100
         
         HLSLINCLUDE
@@ -32,18 +27,25 @@ Shader "ARP/Lit"
         ENDHLSL
         Pass
         {
+            Tags 
+            { 
+                "RenderType"="Opaque" 
+                "LightMode" = "CustomLit"
+            }
             Blend [_SrcBlend][_DstBlend]
             ZWrite [_ZWrite]
             
             HLSLPROGRAM
             #include "Assets/Scripts/Runtime/ShaderLib/LitPass.hlsl"
-            #pragma multi_compile _ LIGHTMAP_ON
             #pragma shader_feature ARP_GPUINSTANCE_ON
             #pragma shader_feature ARP_SHADERBATCH_ON
             #pragma shader_feature ARP_CLIPING
             #pragma shader_feature ARP_PREMULTIPLY_ALPHA
             #pragma shader_feature ARP_STATIC
+            #pragma shader_feature ARP_SHADOW_MASK_DISTANCE
             #pragma multi_compile _ ARP_DIRECTIONAL_PCF3 ARP_DIRECTIONAL_PCF5 ARP_DIRECTIONAL_PCF7
+            #pragma multi_compile _ LIGHTMAP_ON
+            
             #pragma vertex LitPassVertex
             #pragma fragment LitPassFrag
             
@@ -68,10 +70,11 @@ Shader "ARP/Lit"
             ENDHLSL
         }
 
-        Pass
+        /*Pass
         {
             Name "META"
-            Tags {
+            Tags 
+            {
 				"LightMode" = "Meta"
 			}
             
@@ -85,6 +88,6 @@ Shader "ARP/Lit"
             #pragma fragment MetaPassFrag
             
             ENDHLSL
-        }
+        }*/
     }
 }
