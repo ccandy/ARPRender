@@ -40,6 +40,19 @@ public class ShadowSettings
       CascadeFade = 0.1f,
       ShadowFilterMode = FilterMode.None
    };
+   
+   [System.Serializable]
+   public struct AddtionalShadow
+   {
+      public ShadowMapSize AdditionalShadowMapSize;
+      public FilterMode ShadowFilterMode;
+   }
+
+   public AddtionalShadow AddtionalShadowSetting = new AddtionalShadow
+   {
+      AdditionalShadowMapSize = ShadowMapSize._1024,
+      ShadowFilterMode = FilterMode.None
+   };
 
    public enum FilterMode
    {

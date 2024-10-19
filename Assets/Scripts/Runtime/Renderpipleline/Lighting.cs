@@ -76,10 +76,10 @@ public class Lighting
             
             if (visibleLight.lightType == LightType.Directional)
             {
-                SetupDirectionalLight(visibleLight, n);
+                SetupDirectionalLight(ref visibleLight, n);
             }else if (visibleLight.lightType == LightType.Spot || visibleLight.lightType == LightType.Point)
             {
-                SetupAdditionalLight(visibleLight, n);
+                SetupAdditionalLight(ref visibleLight, n);
             }
         }
 
@@ -91,7 +91,7 @@ public class Lighting
 
     }
 
-    private void SetupAdditionalLight(VisibleLight visibleLight, int visibleLightIndex)
+    private void SetupAdditionalLight(ref VisibleLight visibleLight, int visibleLightIndex)
     {
         if (additonalLightCount >= max_additionallight_count)
         {
@@ -112,6 +112,7 @@ public class Lighting
             SetupSpotLight(additonalLightCount, ref visibleLight);
         }
         
+        _shadows.SetupAddtionalShadow(ref visibleLight, visibleLightIndex);
         additonalLightCount++;
     }
 
@@ -131,7 +132,7 @@ public class Lighting
         
     }
     
-    private void SetupDirectionalLight(VisibleLight visibleLight, int visualLightIndex)
+    private void SetupDirectionalLight(ref VisibleLight visibleLight, int visualLightIndex)
     {
         if (dirLightCount >= max_dirLight_count)
         {
